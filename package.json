@@ -1,0 +1,33 @@
+{
+  "name": "playlist-pipeline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "fmt": "standard --fix",
+    "lint": "standard",
+    "test": "jest --verbose"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "4.3.2",
+    "dotenv": "10.0.0",
+    "joi": "17.4.2",
+    "js-yaml": "4.1.0",
+    "lodash": "4.17.21",
+    "meow": "9.0.0",
+    "spotify-web-api-node": "5.0.2"
+  },
+  "devDependencies": {
+    "jest": "27.1.1",
+    "standard": "16.0.3",
+    "temp-write": "4.0.0"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  }
+}

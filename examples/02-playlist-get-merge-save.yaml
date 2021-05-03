@@ -1,0 +1,17 @@
+name: playlist get, merge and save
+tasks:
+  playlist_1_tracks:
+    type: playlist.get_tracks
+    spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX1ewVhAJ17m4?si=dd9d9a77c97e457a # Playlist - Pop Punk's Not Dead
+  playlist_2_tracks:
+    type: playlist.get_tracks
+    spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX3YlUroplxjF?si=9968fe76c6044ea7 # Playlist - Crash Course
+  merge_tracks:
+    type: tracks.merge
+    tracks:
+      - playlist_1_tracks
+      - playlist_2_tracks
+  save_tracks:
+    type: playlist.replace_tracks
+    spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
+    tracks: merge_tracks
