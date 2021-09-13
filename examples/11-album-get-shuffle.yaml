@@ -1,4 +1,4 @@
-name: album get and save
+name: album get, shuffle and save
 tasks:
   get_tracks:
     type: album.get_tracks
