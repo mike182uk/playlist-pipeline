@@ -15,6 +15,7 @@ const getLibraryTracksTask = require('./lib/task/getLibraryTracks')
 const getPlaylistTracksTask = require('./lib/task/getPlaylistTracks')
 const mergeTracksTask = require('./lib/task/mergeTracks')
 const replacePlaylistTracksTask = require('./lib/task/replacePlaylistTracks')
+const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
 
 async function run (configPath) {
@@ -30,6 +31,7 @@ async function run (configPath) {
     getPlaylistTracksTask,
     mergeTracksTask,
     replacePlaylistTracksTask,
+    shuffleTracksTask,
     sortTracksTask
   ])
   const { error } = schema.validate(config)
@@ -78,6 +80,9 @@ async function run (configPath) {
         break
       case 'tracks.merge':
         trackCollections[taskId] = await mergeTracksTask.execute({ config: taskConfig, trackCollections })
+        break
+      case 'tracks.shuffle':
+        trackCollections[taskId] = await shuffleTracksTask.execute({ config: taskConfig, trackCollections })
         break
       case 'tracks.sort':
         trackCollections[taskId] = await sortTracksTask.execute({ config: taskConfig, trackCollections })
