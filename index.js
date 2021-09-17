@@ -3,6 +3,7 @@
 require('dotenv').config()
 
 const debug = require('debug')('app')
+const getStdin = require('get-stdin')
 const meow = require('meow')
 const SpotifyWebApi = require('spotify-web-api-node')
 
@@ -19,10 +20,32 @@ const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
 
 async function run (configPath) {
-  debug(`Loading config from: ${configPath}`)
-
   // Load config
-  const config = await loadYAMLConfig(configPath)
+  let config
+
+  const input = await getStdin()
+
+  if (input !== '') {
+    debug('Loading config from stdin')
+
+    if (configPath !== undefined) {
+      throw new Error('Can not load config from stdin and config file at the same time')
+    }
+
+    try {
+      config = JSON.parse(input)
+    } catch (err) {
+      throw new Error(`Failed to load config from stdin due to: ${err.message}`)
+    }
+  } else if (configPath !== undefined) {
+    debug(`Loading config from: ${configPath}`)
+
+    config = await loadYAMLConfig(configPath)
+  } else {
+    throw new Error('No config provided')
+  }
+
+  // Validate config
   const schema = buildSchema([
     dedupeTracksTask,
     filterTracksTask,
@@ -52,9 +75,12 @@ async function run (configPath) {
   spotify.setAccessToken(body.access_token)
 
   // Execute tasks
+  const taskIds = Object.keys(config.tasks);
   const trackCollections = {}
 
-  for (const taskId of Object.keys(config.tasks)) {
+  debug(`${taskIds.length} tasks to execute`)
+
+  for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
 
     debug(`Executing task: ${taskConfig.type}`)
@@ -93,7 +119,12 @@ async function run (configPath) {
 
 const cli = meow(`
   Usage
-    $ playlist-pipeline --config <path-to-config>
+
+    $ playlist-pipeline <path-to-config>
+
+      or
+
+    $ echo 'CONFIG AS JSON' | playlist-pipeline
 `)
 
 run(cli.input[0])
