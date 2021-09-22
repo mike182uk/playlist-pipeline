@@ -6,12 +6,14 @@
   "scripts": {
     "fmt": "standard --fix",
     "lint": "standard",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "clean": "node ./scripts/delete-app-data.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "conf": "10.0.3",
     "debug": "4.3.2",
     "dotenv": "10.0.0",
     "get-stdin": "8.0.0",
