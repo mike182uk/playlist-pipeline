@@ -23,7 +23,6 @@ const debugAuth = require('debug')('auth')
 const getStdin = require('get-stdin')
 const http = require('http')
 const meow = require('meow')
-const ora = require('ora')
 const SpotifyWebApi = require('spotify-web-api-node')
 
 const {
