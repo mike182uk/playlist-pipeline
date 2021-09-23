@@ -10,3 +10,4 @@ updates:
     ignore:
       - dependency-name: get-stdin
       - dependency-name: meow
+      - dependency-name: temp-write
