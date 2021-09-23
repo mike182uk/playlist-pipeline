@@ -1,12 +1,14 @@
-name: playlist get, dedupe and save
+name: sort
 tasks:
   get_tracks:
     type: playlist.get_tracks
-    spotify_url: https://open.spotify.com/playlist/5OZMu35wrCh7EaaP2vP0in?si=9c0c3ffacf7a43a5 # Dev playlist - Dedupe
-  dedupe_tracks:
-    type: tracks.dedupe
+    spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX1ewVhAJ17m4?si=343476d216844eb6 # Playlist - Pop Punk's Not Dead
+  sort_tracks:
+    type: tracks.sort
     tracks: get_tracks
+    sort:
+      artist: asc
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
-    tracks: dedupe_tracks
+    tracks: sort_tracks

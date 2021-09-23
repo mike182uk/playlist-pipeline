@@ -1,4 +1,4 @@
-name: playlist get, merge and save
+name: merge
 tasks:
   playlist_1_tracks:
     type: playlist.get_tracks

@@ -1,12 +1,9 @@
-name: album get, shuffle and save
+name: get album tracks
 tasks:
   get_tracks:
     type: album.get_tracks
     spotify_url: https://open.spotify.com/album/6d2dI1NyZB5xHpqBLPiHbP?si=mod36-DmSp6Bzg0ctu66qw&dl_branch=1 # Album - AVA - I-Empire
-  shuffle_tracks:
-    type: tracks.shuffle
-    tracks: get_tracks
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
-    tracks: shuffle_tracks
+    tracks: get_tracks

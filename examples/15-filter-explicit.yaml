@@ -1,14 +1,13 @@
-name: library get, filter by genre and save
+name: filter explicit
 tasks:
   get_tracks:
-    type: library.get_tracks
+    type: album.get_tracks
+    spotify_url: https://open.spotify.com/album/5mi7FKaWE5CtcOjdyxScA7?si=IR2c3UtyT1yosMDeK1gwWQ&dl_branch=1 # Album - Limp Bizkit - Chocolate Starfish And The Hot Dog Flavored Water
   filter_tracks:
     type: tracks.filter
     tracks: get_tracks
     filter:
-      genre:
-        - pop
-        - metal
+      explicit: false
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
