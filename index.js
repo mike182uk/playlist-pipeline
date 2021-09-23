@@ -169,6 +169,7 @@ async function run (configPath) {
             appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.access_token`, body.access_token)
             appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.token_type`, body.token_type)
             appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_in`, body.expires_in)
+            appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_at`, new Date(new Date().getTime() + (1000 * body.expires_in)))
             appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.refresh_token`, body.refresh_token)
             appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.scope`, body.scope)
 
@@ -190,29 +191,45 @@ async function run (configPath) {
     } else {
       debugAuth('Authentication data present in app data, skipping authentication flow')
 
-      try {
-        // TODO: Check if token actually needs refreshing before attempting to refresh
+      // Check that the existing access token does not expire within the next minute. If
+      // it does, refresh it
+      if (
+        new Date(
+          appData.get(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_at`)
+        ) <=
+        new Date(
+          new Date().getTime() - (1000 * 60)
+        )
+      ) {
+        try {
+          debugAuth('Access token expired, requesting refresh token')
 
-        debugAuth('Requesting refresh token')
+          spotify.setRefreshToken(appData.get(`${APP_DATA_SPOTIFY_AUTH_KEY}.refresh_token`))
 
-        spotify.setRefreshToken(appData.get(`${APP_DATA_SPOTIFY_AUTH_KEY}.refresh_token`))
+          const { body } = await getRefreshedAccessToken({
+            refreshToken: spotify.getRefreshToken(),
+            clientId: spotify.getClientId()
+          })
 
-        const { body } = await getRefreshedAccessToken({
-          refreshToken: spotify.getRefreshToken(),
-          clientId: spotify.getClientId()
-        })
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.access_token`, body.access_token)
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.token_type`, body.token_type)
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_in`, body.expires_in)
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_at`, new Date(new Date().getTime() + (1000 * body.expires_in)))
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.refresh_token`, body.refresh_token)
+          appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.scope`, body.scope)
 
-        appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.access_token`, body.access_token)
-        appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.token_type`, body.token_type)
-        appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.expires_in`, body.expires_in)
-        appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.refresh_token`, body.refresh_token)
-        appData.set(`${APP_DATA_SPOTIFY_AUTH_KEY}.scope`, body.scope)
+          spotify.setAccessToken(body.access_token)
+        } catch (err) {
+          appData.delete(APP_DATA_SPOTIFY_AUTH_KEY)
 
-        spotify.setAccessToken(body.access_token)
-      } catch (err) {
-        appData.delete(APP_DATA_SPOTIFY_AUTH_KEY)
+          throw new Error('An authentication error has occurred. Re-authentication is needed, please try running the command again.')
+        }
+      } else {
+        debugAuth('Access token has not yet expired')
 
-        throw new Error('An authentication error has occurred. Re-authentication is needed, please try running the command again.')
+        spotify.setAccessToken(
+          appData.get(`${APP_DATA_SPOTIFY_AUTH_KEY}.access_token`)
+        )
       }
     }
   }
