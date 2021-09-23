@@ -15,6 +15,7 @@ const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
 
 require('dotenv').config()
 
+const chalk = require('chalk')
 const Conf = require('conf')
 const crypto = require('crypto')
 const debug = require('debug')('app')
@@ -22,6 +23,7 @@ const debugAuth = require('debug')('auth')
 const getStdin = require('get-stdin')
 const http = require('http')
 const meow = require('meow')
+const ora = require('ora')
 const SpotifyWebApi = require('spotify-web-api-node')
 
 const {
@@ -41,6 +43,24 @@ const replacePlaylistTracksTask = require('./lib/task/replacePlaylistTracks')
 const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
 
+function logErr (message, error) {
+  console.error(chalk.red(message))
+
+  if (error !== undefined && process.env.APP_ENV === 'dev') {
+    console.error('\n', error)
+  }
+}
+
+function logWarn (message) {
+  console.warn(chalk.yellow(message))
+}
+
+function logInfo (message) {
+  if (process.env.DEBUG !== '') return
+
+  console.info(chalk.blue(message))
+}
+
 async function loadConfig (configPath) {
   let config
 
@@ -50,7 +70,7 @@ async function loadConfig (configPath) {
     debug('Loading config from stdin')
 
     if (configPath !== undefined) {
-      throw new Error('Can not load config from stdin and config file at the same time')
+      throw new Error('Cannot load config from stdin and a config file at the same time')
     }
 
     try {
@@ -63,7 +83,7 @@ async function loadConfig (configPath) {
 
     config = await loadYAMLConfig(configPath)
   } else {
-    throw new Error('No config provided')
+    throw new Error('No config was provided')
   }
 
   return config
@@ -84,7 +104,7 @@ function validateConfig (config) {
   const { error } = schema.validate(config)
 
   if (error) {
-    throw new Error(`Invalid config: ${error.message}`)
+    throw new Error(`Config validation failed due to: ${error.message}`)
   }
 }
 
@@ -93,42 +113,78 @@ async function executeTasks (config, spotify) {
   const trackCollections = {}
 
   debug(`${taskIds.length} tasks to execute`)
+  logInfo(`${taskIds.length} tasks to execute...`)
 
   for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
 
     debug(`Executing task: ${taskConfig.type}`)
+    logInfo(`Executing task: ${taskId}`)
 
-    switch (taskConfig.type) {
-      case 'album.get_tracks':
-        trackCollections[taskId] = await getAlbumTracksTask.execute({ config: taskConfig, spotify })
-        break
-      case 'library.get_tracks':
-        trackCollections[taskId] = await getLibraryTracksTask.execute({ config: taskConfig, spotify })
-        break
-      case 'playlist.get_tracks':
-        trackCollections[taskId] = await getPlaylistTracksTask.execute({ config: taskConfig, spotify })
-        break
-      case 'playlist.replace_tracks':
-        await replacePlaylistTracksTask.execute({ config: taskConfig, trackCollections, spotify })
-        break
-      case 'tracks.dedupe':
-        trackCollections[taskId] = await dedupeTracksTask.execute({ config: taskConfig, trackCollections })
-        break
-      case 'tracks.filter':
-        trackCollections[taskId] = await filterTracksTask.execute({ config: taskConfig, trackCollections })
-        break
-      case 'tracks.merge':
-        trackCollections[taskId] = await mergeTracksTask.execute({ config: taskConfig, trackCollections })
-        break
-      case 'tracks.shuffle':
-        trackCollections[taskId] = await shuffleTracksTask.execute({ config: taskConfig, trackCollections })
-        break
-      case 'tracks.sort':
-        trackCollections[taskId] = await sortTracksTask.execute({ config: taskConfig, trackCollections })
-        break
+    try {
+      switch (taskConfig.type) {
+        case 'album.get_tracks':
+          trackCollections[taskId] = await getAlbumTracksTask.execute({
+            config: taskConfig,
+            spotify
+          })
+          break
+        case 'library.get_tracks':
+          trackCollections[taskId] = await getLibraryTracksTask.execute({
+            config: taskConfig,
+            spotify
+          })
+          break
+        case 'playlist.get_tracks':
+          trackCollections[taskId] = await getPlaylistTracksTask.execute({
+            config: taskConfig,
+            spotify
+          })
+          break
+        case 'playlist.replace_tracks':
+          await replacePlaylistTracksTask.execute({
+            config: taskConfig,
+            trackCollections,
+            spotify
+          })
+          break
+        case 'tracks.dedupe':
+          trackCollections[taskId] = await dedupeTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+        case 'tracks.filter':
+          trackCollections[taskId] = await filterTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+        case 'tracks.merge':
+          trackCollections[taskId] = await mergeTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+        case 'tracks.shuffle':
+          trackCollections[taskId] = await shuffleTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+        case 'tracks.sort':
+          trackCollections[taskId] = await sortTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+      }
+    } catch (err) {
+      throw new Error(`Failed to execute task [${taskId}] due to: ${err.message}`)
     }
   }
+
+  logInfo('All tasks executed!')
 }
 
 async function authenticate () {
@@ -152,7 +208,7 @@ async function authenticate () {
   })
 
   // Prompt user to visit authentication URL
-  console.log(`\nAuthorization required. Please visit the following URL in a browser on this machine:\n\n${url}\n`)
+  logWarn(`\nAuthorization required. Please visit the following URL in a browser on this machine:\n\n${url}\n`)
 
   // Start a HTTP server that is listening on the same URI that the spotify app
   // is set to redirect too after user accepts / declines authentication. Wait for
@@ -169,7 +225,7 @@ async function authenticate () {
         res.writeHead(500)
         res.end('Authentication unsuccessful')
 
-        return reject(new Error('Authentication failed due to: Invalid state'))
+        return reject(new Error('Authentication failed due to: Invalid state received to authentication HTTP handler'))
       } else {
         const { body, statusCode } = await getAccessToken({
           redirectUri: SPOTIFY_APP_REDIRECT_URI,
@@ -273,7 +329,7 @@ async function initSpotify (appData) {
           // on next execution
           appData.delete(APP_DATA_SPOTIFY_AUTH_KEY)
 
-          throw new Error('An authentication error has occurred. Re-authentication is needed, please try running the command again.')
+          throw new Error('An authentication error has occurred. Re-authentication is needed, please try running the command again')
         }
       } else {
         debugAuth('Access token has not yet expired, refresh not required')
@@ -287,24 +343,28 @@ async function initSpotify (appData) {
 }
 
 async function run (configPath) {
-  // Initialise app data
-  const appData = new Conf({
-    clearInvalidConfig: true,
-    encryptionKey: APP_DATA_ENCRYPTION_KEY
-  })
+  try {
+    // Initialise app data
+    const appData = new Conf({
+      clearInvalidConfig: true,
+      encryptionKey: APP_DATA_ENCRYPTION_KEY
+    })
 
-  debug(`App data location: ${appData.path}`)
+    debug(`App data location: ${appData.path}`)
 
-  // Initialise config
-  const config = await loadConfig(configPath)
+    // Initialise config
+    const config = await loadConfig(configPath)
 
-  validateConfig(config)
+    validateConfig(config)
 
-  // Initialise Spotify
-  const spotify = await initSpotify(appData)
+    // Initialise Spotify
+    const spotify = await initSpotify(appData)
 
-  // Execute tasks
-  await executeTasks(config, spotify)
+    // Execute tasks
+    await executeTasks(config, spotify)
+  } catch (err) {
+    logErr(`\nAn error occurred:\n\n  ${err.message}`, err)
+  }
 }
 
 const cli = meow(`
