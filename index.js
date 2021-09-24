@@ -178,55 +178,68 @@ async function authenticate () {
   // a request to the server before continuing execution
   let server
 
-  const result = await new Promise((resolve, reject) => {
-    server = http.createServer(async (req, res) => {
-      debugAuth('HTTP request received to authentication handler')
+  try {
+    const result = await new Promise((resolve, reject) => {
+      server = http.createServer(async (req, res) => {
+        debugAuth('HTTP request received to authentication handler')
 
-      const queryParams = new URL(req.url, SPOTIFY_APP_REDIRECT_URI).searchParams
+        const queryParams = new URL(req.url, SPOTIFY_APP_REDIRECT_URI).searchParams
 
-      if (queryParams.get('state') !== state) {
-        res.writeHead(500)
-        res.end('Authentication unsuccessful')
-
-        return reject(new Error('Authentication failed due to: Invalid state received to authentication HTTP handler'))
-      } else {
-        const { body, statusCode } = await getAccessToken({
-          redirectUri: SPOTIFY_APP_REDIRECT_URI,
-          clientId: SPOTIFY_APP_CLIENT_ID,
-          code: queryParams.get('code'),
-          codeVerifier
-        })
-
-        if (statusCode !== 200) {
+        if (queryParams.get('state') !== state) {
           res.writeHead(500)
           res.end('Authentication unsuccessful')
 
           return reject(
-            new Error(`Authentication failed due to: Invalid status code [${statusCode}] received whilst requesting access token`)
+            new Error('Authentication failed due to: Invalid state received to authentication HTTP handler')
           )
+        } else if (queryParams.get('error') !== null) {
+          res.writeHead(500)
+          res.end('Authentication unsuccessful')
+
+          return reject(
+            new Error(`Authentication failed due to: ${queryParams.get('error')}`)
+          )
+        } else {
+          const { body, statusCode } = await getAccessToken({
+            redirectUri: SPOTIFY_APP_REDIRECT_URI,
+            clientId: SPOTIFY_APP_CLIENT_ID,
+            code: queryParams.get('code'),
+            codeVerifier
+          })
+
+          if (statusCode !== 200) {
+            res.writeHead(500)
+            res.end('Authentication unsuccessful')
+
+            return reject(
+              new Error(`Authentication failed due to: Invalid status code [${statusCode}] received whilst requesting access token`)
+            )
+          }
+
+          res.writeHead(200)
+          res.end('Authentication successful! You can now close this page')
+
+          return resolve({
+            accessToken: body.access_token,
+            refreshToken: body.refresh_token,
+            expiresAt: new Date(new Date().getTime() + (1000 * body.expires_in))
+          })
         }
+      })
 
-        res.writeHead(200)
-        res.end('Authentication successful! You can now close this page')
+      debugAuth('Starting HTTP authentication handler')
 
-        return resolve({
-          accessToken: body.access_token,
-          refreshToken: body.refresh_token,
-          expiresAt: new Date(new Date().getTime() + (1000 * body.expires_in))
-        })
-      }
+      server.listen(SPOTIFY_APP_REDIRECT_URI_PORT)
     })
 
-    debugAuth('Starting HTTP authentication handler')
+    server.close()
 
-    server.listen(SPOTIFY_APP_REDIRECT_URI_PORT)
-  })
+    return result
+  } catch (err) {
+    server.close()
 
-  // After a HTTP request has been received to the server, close it and return
-  // the result
-  server.close()
-
-  return result
+    throw err
+  }
 }
 
 /**
