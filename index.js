@@ -71,14 +71,15 @@ function logWarn (message) {
 }
 
 /**
- * Log an info message to the console
+ * Log an info message to the console, but only if not in debug mode (to reduce
+ * console clutter)
  *
  * @param {string} message
  *
  * @returns {void}
  */
 function logInfo (message) {
-  if (process.env.DEBUG !== '') return
+  if (process.env.DEBUG !== undefined) return
 
   console.info(chalk.blue(message))
 }
