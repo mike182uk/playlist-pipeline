@@ -1,7 +1,7 @@
 {
   "name": "playlist-pipeline",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI for programmatically organising, pruning & grooming your Spotify playlists",
   "main": "index.js",
   "scripts": {
     "fmt": "standard --fix",
@@ -9,9 +9,25 @@
     "test": "jest --verbose",
     "clean": "node ./scripts/delete-app-data.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "bin": "./index.js",
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "Michael David Barrett <mike182uk@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mike182uk/playlist-pipeline.git"
+  },
+  "homepage": "https://github.com/mike182uk/playlist-pipeline",
+  "bugs": {
+    "url": "https://github.com/mike182uk/playlist-pipeline/issues"
+  },
+  "keywords": [
+    "spotify",
+    "playlist",
+    "pipeline"
+  ],
   "dependencies": {
     "chalk": "4.1.2",
     "conf": "10.0.3",
