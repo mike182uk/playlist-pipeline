@@ -1,4 +1,4 @@
-name: dedupe
+name: dedupe playlist
 tasks:
   get_tracks:
     type: playlist.get_tracks

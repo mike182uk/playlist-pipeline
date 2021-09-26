@@ -1,14 +1,15 @@
-name: filter
+name: filter playlist by track number
 tasks:
   get_tracks:
     type: playlist.get_tracks
-    spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX1ewVhAJ17m4?si=343476d216844eb6  # Playlist - Pop Punk's Not Dead
+    spotify_url: https://open.spotify.com/playlist/51PaWPdEDI0JpUnUlBCipM?si=7a7a8ba002a24477 # Dev playlist - Filter
   filter_tracks:
     type: tracks.filter
     tracks: get_tracks
     filter:
-      artist: Neck Deep
-      album: Fall
+      trackNumber:
+        operator: eq
+        value: 1 # Should only be "Box Car Racer - I Feel So", "blink-182 - Dumpweed" and "blink-182 - Feeling This"
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save

@@ -1,4 +1,4 @@
-name: sort by popularity
+name: sort playlist by multiple
 tasks:
   get_tracks:
     type: playlist.get_tracks
@@ -7,7 +7,8 @@ tasks:
     type: tracks.sort
     tracks: get_tracks
     sort:
-      popularity: desc
+      artist: asc
+      duration: asc
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save

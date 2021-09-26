@@ -1,18 +1,16 @@
-name: sort by release date
+name: filter playlist by name
 tasks:
   get_tracks:
-    type: library.get_tracks
+    type: playlist.get_tracks
+    spotify_url: https://open.spotify.com/playlist/51PaWPdEDI0JpUnUlBCipM?si=7a7a8ba002a24477 # Dev playlist - Filter
   filter_tracks:
     type: tracks.filter
     tracks: get_tracks
     filter:
-      artist: Neck Deep
-  sort_tracks:
-    type: tracks.sort
-    tracks: filter_tracks
-    sort:
-      releaseDate: asc
+      name:
+        operator: eq
+        value: There Is
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
-    tracks: sort_tracks
+    tracks: filter_tracks
