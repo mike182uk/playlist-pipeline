@@ -15,18 +15,18 @@ const SPOTIFY_APP_REQUIRED_SCOPES = [
 
 const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
 
-require('dotenv').config()
-
 const chalk = require('chalk')
+const { Command } = require('commander')
 const Conf = require('conf')
 const crypto = require('crypto')
-const debug = require('debug')('app')
+const debug = require('debug')
+const debugApp = require('debug')('app')
 const debugAuth = require('debug')('auth')
 const getStdin = require('get-stdin')
 const http = require('http')
-const meow = require('meow')
 const SpotifyWebApi = require('spotify-web-api-node')
 
+const pkg = require('./package.json')
 const { buildSchema } = require('./lib/config/validation')
 const { loadYAMLConfig } = require('./lib/config/yaml')
 const {
@@ -56,7 +56,7 @@ const sortTracksTask = require('./lib/task/sortTracks')
 function logErr (message, error) {
   console.error(chalk.red(message))
 
-  if (error !== undefined && process.env.APP_ENV === 'dev') {
+  if (error !== undefined && debug.enabled('app') === true) {
     console.error('\n', error)
   }
 }
@@ -81,7 +81,7 @@ function logWarn (message) {
  * @returns {void}
  */
 function logInfo (message) {
-  if (process.env.DEBUG !== undefined) return
+  if (debug.enabled('app') === true) return
 
   console.info(chalk.blue(message))
 }
@@ -99,7 +99,7 @@ async function loadConfig (configPath) {
   const input = await getStdin()
 
   if (input !== '') {
-    debug('Loading config from stdin')
+    debugApp('Loading config from stdin')
 
     if (configPath !== undefined) {
       throw new Error('Cannot load config from stdin and a config file at the same time')
@@ -111,7 +111,7 @@ async function loadConfig (configPath) {
       throw new Error(`Failed to load config from stdin due to: ${err.message}`)
     }
   } else if (configPath !== undefined) {
-    debug(`Loading config from: ${configPath}`)
+    debugApp(`Loading config from: ${configPath}`)
 
     config = await loadYAMLConfig(configPath)
   } else {
@@ -248,21 +248,22 @@ async function authenticate () {
  * Initialise the Spotify client ensuring that it is authenticated to make requests
  *
  * @param {Conf} appData
+ * @param {string} userProvidedAccessToken
  *
  * @returns {Promise<SpotifyWebApi>}
  */
-async function initSpotify (appData) {
+async function initSpotify (appData, userProvidedAccessToken) {
   const spotify = new SpotifyWebApi({
     clientId: SPOTIFY_APP_CLIENT_ID,
     redirectUri: SPOTIFY_APP_REDIRECT_URI
   })
 
-  // If an access token is present in environment use it for authenticating requests
+  // If an access token was provided use it for authenticating requests
   // otherwise attempt authentication flow
-  if (process.env.ACCESS_TOKEN !== undefined) {
-    debugAuth('Using access token provided in environment for authentication')
+  if (userProvidedAccessToken !== undefined) {
+    debugAuth('Using user provided access token for authentication')
 
-    spotify.setAccessToken(process.env.ACCESS_TOKEN)
+    spotify.setAccessToken(userProvidedAccessToken)
   } else {
     debugAuth('Attempting authentication flow')
 
@@ -339,13 +340,16 @@ async function executeTasks (config, spotify) {
   const taskIds = Object.keys(config.tasks)
   const trackCollections = {}
 
-  debug(`${taskIds.length} tasks to execute`)
+  debugApp(`Executing: ${config.name}`)
+  logInfo(`Executing tasks for: ${config.name}`)
+
+  debugApp(`${taskIds.length} tasks to execute`)
   logInfo(`${taskIds.length} tasks to execute...`)
 
   for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
 
-    debug(`Executing task: ${taskConfig.type}`)
+    debugApp(`Executing task: ${taskConfig.type}`)
     logInfo(`Executing task: ${taskId}`)
 
     try {
@@ -411,50 +415,85 @@ async function executeTasks (config, spotify) {
     }
   }
 
+  debugApp('All tasks successfully executed')
   logInfo('All tasks executed!')
 }
 
 /**
- * Run the application
+ * Initialise the program
  *
- * @param {string} configPath
- *
- * @returns {Promise<void>}
+ * @returns {object}
  */
-async function run (configPath) {
-  try {
-    // Initialise app data
-    const appData = new Conf({
-      clearInvalidConfig: true,
-      // Dont worry, this is safe to be publicly visible :) - https://github.com/sindresorhus/conf#encryptionkey
-      encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834'
+function initProgram () {
+  const program = new Command()
+
+  // Initialise program
+  program
+    .name(pkg.name)
+    .description(pkg.description)
+    .version(pkg.version)
+    .hook('preAction', (thisCommand, actionCommand) => {
+      if (actionCommand.opts().debug === true) {
+        debug.enable('*')
+      }
     })
 
-    debug(`App data location: ${appData.path}`)
+  // Configure "run" command
+  program
+    .command('run')
+    .argument('[path]', 'Path to config file')
+    .description('Execute the tasks in the provided config')
+    .option('-d, --debug', 'Enable debug output')
+    .option('-t, --token <token>', 'Access token to use for authentication')
+    .action(async (configPath, opts) => {
+      try {
+        // Initialise app data
+        const appData = new Conf({
+          clearInvalidConfig: true,
+          // Dont worry, this is safe to be publicly visible :) - https://github.com/sindresorhus/conf#encryptionkey
+          encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834'
+        })
 
-    // Initialise config
-    const config = await loadConfig(configPath)
+        debugApp(`App data location: ${appData.path}`)
 
-    validateConfig(config)
+        // Initialise config
+        const config = await loadConfig(configPath)
 
-    // Initialise Spotify
-    const spotify = await initSpotify(appData)
+        validateConfig(config)
 
-    // Execute tasks
-    await executeTasks(config, spotify)
-  } catch (err) {
-    logErr(`\nAn error occurred:\n\n  ${err.message}`, err)
+        // Initialise Spotify
+        const spotify = await initSpotify(appData, opts.token)
+
+        // Execute tasks
+        await executeTasks(config, spotify)
+      } catch (err) {
+        logErr(`\nAn error occurred:\n\n  ${err.message}`, err)
+      }
+    })
+
+  // Configure "reset" command
+  program
+    .command('reset')
+    .option('-d, --debug', 'Enable debug output')
+    .description('Remove all saved data')
+    .action(() => {
+      const appData = new Conf({
+        clearInvalidConfig: true
+      })
+
+      debugApp(`Clearing app data from: ${appData.path}`)
+
+      appData.clear()
+
+      logInfo('All saved data removed!')
+    })
+
+  return {
+    run: () => {
+      program.parse(process.argv)
+    }
   }
 }
 
-const cli = meow(`
-  Usage
-
-    $ playlist-pipeline <path-to-config>
-
-      or
-
-    $ echo 'CONFIG AS JSON' | playlist-pipeline
-`)
-
-run(cli.input[0])
+// Go!
+initProgram().run()
