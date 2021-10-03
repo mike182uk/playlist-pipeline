@@ -3,14 +3,16 @@
 const SPOTIFY_APP_CLIENT_ID = '231c69aaf23c4e9ba6e349c56130f56f'
 const SPOTIFY_APP_REDIRECT_URI_PORT = 8736
 const SPOTIFY_APP_REDIRECT_URI = `http://localhost:${SPOTIFY_APP_REDIRECT_URI_PORT}`
-const SPOTIFY_APP_REQUIRED_SCOPES = [ // https://developer.spotify.com/documentation/general/guides/scopes/
+
+// https://developer.spotify.com/documentation/general/guides/scopes/
+const SPOTIFY_APP_REQUIRED_SCOPES = [
   'playlist-modify-public', // Needed to save changes to public playlists
   'playlist-modify-private', // Needed to save changes to private playlists
   'playlist-read-private', // Needed to read data from private playlists
-  'playlist-read-collaborative', // // Needed to read data from collaborative playlists
+  'playlist-read-collaborative', // Needed to read data from collaborative playlists
   'user-library-read' // Needed to read data from library
 ]
-const APP_DATA_ENCRYPTION_KEY = 'e40cbeb4a981bd089cfd149223eb74fbd9e88834' // https://github.com/sindresorhus/conf#encryptionkey
+
 const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
 
 require('dotenv').config()
@@ -25,13 +27,13 @@ const http = require('http')
 const meow = require('meow')
 const SpotifyWebApi = require('spotify-web-api-node')
 
+const { buildSchema } = require('./lib/config/validation')
+const { loadYAMLConfig } = require('./lib/config/yaml')
 const {
   createAuthorizationURL,
   getAccessToken,
   getRefreshedAccessToken
 } = require('./lib/spotify/auth')
-const { buildSchema } = require('./lib/config/validation')
-const { loadYAMLConfig } = require('./lib/config/yaml')
 const dedupeTracksTask = require('./lib/task/dedupeTracks')
 const filterTracksTask = require('./lib/task/filterTracks')
 const getAlbumTracksTask = require('./lib/task/getAlbumTracks')
@@ -148,9 +150,9 @@ function validateConfig (config) {
 /**
  * Attempt to authenticate with Spotify using: Authorization Code Flow with Proof Key for Code Exchange (PKCE)
  *
- * @see https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce
- *
  * @returns {Promise<object>}
+ *
+ * @see https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce
  */
 async function authenticate () {
   const codeVerifierSize = Math.random() * (128 - 43 + 1) + 43 //  43 = min, 128 = max
@@ -424,7 +426,8 @@ async function run (configPath) {
     // Initialise app data
     const appData = new Conf({
       clearInvalidConfig: true,
-      encryptionKey: APP_DATA_ENCRYPTION_KEY
+      // Dont worry, this is safe to be publicly visible :) - https://github.com/sindresorhus/conf#encryptionkey
+      encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834'
     })
 
     debug(`App data location: ${appData.path}`)
