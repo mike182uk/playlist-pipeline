@@ -15,7 +15,6 @@ const SPOTIFY_APP_REQUIRED_SCOPES = [
 
 const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
 
-const chalk = require('chalk')
 const { Command } = require('commander')
 const Conf = require('conf')
 const crypto = require('crypto')
@@ -45,8 +44,8 @@ const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
 
 /**
- * Log an error message to the console. Also log the original error to the console
- * if the APP_ENV environment variable is set to "dev"
+ * Log an error message to the console. If debug is enabled log original error
+ * to the console.
  *
  * @param {string} message
  * @param {Error} error
@@ -54,10 +53,12 @@ const sortTracksTask = require('./lib/task/sortTracks')
  * @returns {void}
  */
 function logErr (message, error) {
-  console.error(chalk.red(message))
+  if (debug.enabled('app') === false) {
+    console.error(message)
+  }
 
-  if (error !== undefined && debug.enabled('app') === true) {
-    console.error('\n', error)
+  if (error && debug.enabled('app') === true) {
+    console.error('\n', error, '\n')
   }
 }
 
@@ -69,7 +70,7 @@ function logErr (message, error) {
  * @returns {void}
  */
 function logWarn (message) {
-  console.warn(chalk.yellow(message))
+  console.warn(message)
 }
 
 /**
@@ -83,7 +84,7 @@ function logWarn (message) {
 function logInfo (message) {
   if (debug.enabled('app') === true) return
 
-  console.info(chalk.blue(message))
+  console.info(message)
 }
 
 /**
@@ -99,23 +100,23 @@ async function loadConfig (configPath) {
   const input = await getStdin()
 
   if (input !== '') {
-    debugApp('Loading config from stdin')
+    debugApp('loading config from stdin')
 
     if (configPath !== undefined) {
-      throw new Error('Cannot load config from stdin and a config file at the same time')
+      throw new Error('cannot load config from stdin and a config file at the same time')
     }
 
     try {
       config = JSON.parse(input)
     } catch (err) {
-      throw new Error(`Failed to load config from stdin due to: ${err.message}`)
+      throw new Error(`failed to load config from stdin: ${err.message}`)
     }
   } else if (configPath !== undefined) {
-    debugApp(`Loading config from: ${configPath}`)
+    debugApp(`loading config from: ${configPath}`)
 
     config = await loadYAMLConfig(configPath)
   } else {
-    throw new Error('No config was provided')
+    throw new Error('no config was provided')
   }
 
   return config
@@ -143,7 +144,7 @@ function validateConfig (config) {
   const { error } = schema.validate(config)
 
   if (error) {
-    throw new Error(`Config validation failed due to: ${error.message}`)
+    throw new Error(`config validation failed due to: ${error.message}`)
   }
 }
 
@@ -173,7 +174,7 @@ async function authenticate () {
   })
 
   // Prompt user to visit authentication URL
-  logWarn(`\nAuthorization required. Please visit the following URL in a browser on this machine:\n\n${url}\n`)
+  logWarn(`\nauthorization required - please visit the following URL in a browser on this machine:\n\n${url}\n`)
 
   // Start a HTTP server that is listening on the same URI that the spotify app
   // is set to redirect too after user accepts / declines authentication. Wait for
@@ -189,17 +190,17 @@ async function authenticate () {
 
         if (queryParams.get('state') !== state) {
           res.writeHead(500)
-          res.end('Authentication unsuccessful')
+          res.end('authentication unsuccessful')
 
           return reject(
-            new Error('Authentication failed due to: Invalid state received to authentication HTTP handler')
+            new Error('authentication failed: invalid state received to authentication HTTP handler')
           )
         } else if (queryParams.get('error') !== null) {
           res.writeHead(500)
-          res.end('Authentication unsuccessful')
+          res.end('authentication unsuccessful')
 
           return reject(
-            new Error(`Authentication failed due to: ${queryParams.get('error')}`)
+            new Error(`authentication failed: ${queryParams.get('error')}`)
           )
         } else {
           const { body, statusCode } = await getAccessToken({
@@ -211,15 +212,15 @@ async function authenticate () {
 
           if (statusCode !== 200) {
             res.writeHead(500)
-            res.end('Authentication unsuccessful')
+            res.end('authentication unsuccessful')
 
             return reject(
-              new Error(`Authentication failed due to: Invalid status code [${statusCode}] received whilst requesting access token`)
+              new Error('authentication failed: invalid status code received whilst requesting access token')
             )
           }
 
           res.writeHead(200)
-          res.end('Authentication successful! You can now close this page')
+          res.end('authentication successful, you can now close this page')
 
           return resolve({
             accessToken: body.access_token,
@@ -229,7 +230,7 @@ async function authenticate () {
         }
       })
 
-      debugAuth('Starting HTTP authentication handler')
+      debugAuth('starting HTTP authentication handler')
 
       server.listen(SPOTIFY_APP_REDIRECT_URI_PORT)
     })
@@ -261,17 +262,17 @@ async function initSpotify (appData, userProvidedAccessToken) {
   // If an access token was provided use it for authenticating requests
   // otherwise attempt authentication flow
   if (userProvidedAccessToken !== undefined) {
-    debugAuth('Using user provided access token for authentication')
+    debugAuth('using user provided access token for auth')
 
     spotify.setAccessToken(userProvidedAccessToken)
   } else {
-    debugAuth('Attempting authentication flow')
+    debugAuth('attempting auth flow')
 
     const existingSpotifyAuthData = appData.get(APP_DATA_SPOTIFY_AUTH_KEY)
 
     // If user has not previously authenticated, attempt authentication
     if (existingSpotifyAuthData === undefined) {
-      debugAuth('Authentication data not present in app data')
+      debugAuth('auth data not present in app data')
 
       const { accessToken, refreshToken, expiresAt } = await authenticate()
 
@@ -282,7 +283,7 @@ async function initSpotify (appData, userProvidedAccessToken) {
     } else {
       // If user has previously authenticated, check that authentication credentials
       // are still valid
-      debugAuth('Authentication data present in app data, skipping authentication flow')
+      debugAuth('auth data present in app data, skipping auth flow')
 
       spotify.setAccessToken(existingSpotifyAuthData.accessToken)
       spotify.setRefreshToken(existingSpotifyAuthData.refreshToken)
@@ -294,7 +295,7 @@ async function initSpotify (appData, userProvidedAccessToken) {
         new Date(new Date().getTime() - (1000 * 60))
       ) {
         try {
-          debugAuth('Access token expired, refreshing access token')
+          debugAuth('access token expired, refreshing access token')
 
           const { body } = await getRefreshedAccessToken({
             refreshToken: spotify.getRefreshToken(),
@@ -315,15 +316,17 @@ async function initSpotify (appData, userProvidedAccessToken) {
           // on next execution
           appData.delete(APP_DATA_SPOTIFY_AUTH_KEY)
 
-          throw new Error('An authentication error has occurred. Re-authentication is needed, please try running the command again')
+          throw new Error('an authentication error has occurred, please try running the command again')
         }
       } else {
-        debugAuth('Access token has not yet expired, refresh not required')
+        debugAuth('access token has not yet expired, refresh not required')
       }
     }
   }
 
-  debugAuth('Authentication successful')
+  debugAuth('auth successful')
+  debugAuth(`access token: ${spotify.getAccessToken()}`)
+  debugAuth(`refresh token: ${spotify.getRefreshToken()}`)
 
   return spotify
 }
@@ -340,8 +343,8 @@ async function executeTasks (config, spotify) {
   const taskIds = Object.keys(config.tasks)
   const trackCollections = {}
 
-  debugApp(`Executing: ${config.name}`)
-  logInfo(`Executing tasks for: ${config.name}`)
+  debugApp(`executing: "${config.name}"`)
+  logInfo(`executing tasks for "${config.name}"`)
 
   debugApp(`${taskIds.length} tasks to execute`)
   logInfo(`${taskIds.length} tasks to execute...`)
@@ -349,8 +352,8 @@ async function executeTasks (config, spotify) {
   for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
 
-    debugApp(`Executing task: ${taskConfig.type}`)
-    logInfo(`Executing task: ${taskId}`)
+    debugApp(`executing task: "${taskId}" (${taskConfig.type})`)
+    logInfo(`executing task "${taskId}"`)
 
     try {
       switch (taskConfig.type) {
@@ -411,12 +414,12 @@ async function executeTasks (config, spotify) {
           break
       }
     } catch (err) {
-      throw new Error(`Failed to execute task [${taskId}] due to: ${err.message}`)
+      throw new Error(`failed to execute task "${taskId}": ${err.message}`)
     }
   }
 
-  debugApp('All tasks successfully executed')
-  logInfo('All tasks executed!')
+  debugApp('all tasks successfully executed')
+  logInfo('all tasks successfully executed')
 }
 
 /**
@@ -441,10 +444,10 @@ function initProgram () {
   // Configure "run" command
   program
     .command('run')
-    .argument('[path]', 'Path to config file')
-    .description('Execute the tasks in the provided config')
-    .option('-d, --debug', 'Enable debug output')
-    .option('-t, --token <token>', 'Access token to use for authentication')
+    .argument('[path]', 'path to config file')
+    .description('execute the tasks in the provided config')
+    .option('-d, --debug', 'enable debug output')
+    .option('-t, --token <token>', 'access token to use for authentication')
     .action(async (configPath, opts) => {
       try {
         // Initialise app data
@@ -454,7 +457,7 @@ function initProgram () {
           encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834'
         })
 
-        debugApp(`App data location: ${appData.path}`)
+        debugApp(`app data location: ${appData.path}`)
 
         // Initialise config
         const config = await loadConfig(configPath)
@@ -467,25 +470,25 @@ function initProgram () {
         // Execute tasks
         await executeTasks(config, spotify)
       } catch (err) {
-        logErr(`\nAn error occurred:\n\n  ${err.message}`, err)
+        logErr(`error: ${err.message}`, err)
       }
     })
 
   // Configure "reset" command
   program
     .command('reset')
-    .option('-d, --debug', 'Enable debug output')
-    .description('Remove all saved data')
+    .option('-d, --debug', 'enable debug output')
+    .description('remove all saved data')
     .action(() => {
       const appData = new Conf({
         clearInvalidConfig: true
       })
 
-      debugApp(`Clearing app data from: ${appData.path}`)
+      debugApp(`clearing app data from: ${appData.path}`)
 
       appData.clear()
 
-      logInfo('All saved data removed!')
+      logInfo('saved data removed')
     })
 
   return {
