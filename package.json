@@ -6,7 +6,7 @@
   "scripts": {
     "fmt": "standard --fix",
     "lint": "standard",
-    "test": "jest --verbose"
+    "test": "jest --verbose --coverage"
   },
   "bin": "./index.js",
   "engines": {
