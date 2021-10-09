@@ -4,7 +4,7 @@ tasks:
     type: library.get_tracks
   sort_tracks:
     type: tracks.sort
-    tracks: filter_tracks
+    tracks: get_tracks
     sort:
       releaseDate: asc
   save_tracks:
