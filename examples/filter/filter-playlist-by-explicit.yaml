@@ -1,8 +1,10 @@
 name: filter playlist by explicit
+
 tasks:
   get_tracks:
     type: playlist.get_tracks
     spotify_url: https://open.spotify.com/playlist/51PaWPdEDI0JpUnUlBCipM?si=7a7a8ba002a24477 # Dev playlist - Filter
+
   filter_tracks:
     type: tracks.filter
     tracks: get_tracks
@@ -10,6 +12,7 @@ tasks:
       explicit:
         operator: eq
         value: true # Should only be "blink-182" songs from the albums "Enema Of The State" & "Blink 182"
+
   save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
