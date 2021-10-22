@@ -193,6 +193,70 @@ Multiple fields can be used to sort:
     releaseDate: desc
 ```
 
+##### Group sorting
+
+If you have more advanced sorting needs, you can group tracks together before sorting them, then sort by the groups themselves:
+
+```yml
+<task_id>:
+  type: tracks.sort
+  tracks: <id_of_task_returning_a_track_collection>
+  group_by: <field>
+  sort:
+    <field>: <direction>
+  sort_group:
+    <field>: <direction>
+```
+
+- `tracks` - ID of a task that returns a track collection
+- `group_by` - The field to group tracks together by
+  - `album` - Album name
+  - `albumId` - Album ID
+  - `albumUri` - Album URI
+  - `artist` - Artist name
+  - `artistId` - Artist ID
+  - `artistUri` - Artist URI
+  - `name` - Track name
+  - `releaseDate` - Track release date
+  - `trackNumber` - Track number
+  - `popularity` - Track popularity (out of 100)
+  - `duration` - Track duration (in milliseconds)
+- `sort` - The field(s) to sort the tracks by and the direction
+  - Valid fields are:
+    - `album` - Album name
+    - `artist` - Artist name
+    - `name` - Track name
+    - `releaseDate` - Track release date
+    - `trackNumber` - Track number
+    - `popularity` - Track popularity (out of 100)
+    - `duration` - Track duration (in milliseconds)
+  - Valid directions are `asc` (`ascending`, `A-Z`, `0-9`) and `desc` (`descending`, `Z-A`, `9-0`).
+- `sort_group` - The field(s) to sort the groups by and the direction
+  - Valid fields are:
+    - `album` - Album name
+    - `artist` - Artist name
+    - `name` - Track name
+    - `releaseDate` - Track release date
+    - `trackNumber` - Track number
+    - `popularity` - Track popularity (out of 100)
+    - `duration` - Track duration (in milliseconds)
+  - Valid directions are `asc` (`ascending`, `A-Z`, `0-9`) and `desc` (`descending`, `Z-A`, `9-0`).
+
+**The first track of each group is used to sort the groups.**
+
+```yml
+# Group tracks by album, sort tracks by trackNumber, sort groups by releaseDate 
+
+<task_id>:
+  type: tracks.filter
+  tracks: <id_of_task_returning_a_track_collection>
+  group_by: album
+  sort:
+    trackNumber: asc
+  sort_groups:
+    releaseDate: asc
+```
+
 ---
 
 #### `tracks.shuffle`
