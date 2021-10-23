@@ -47,5 +47,9 @@
     "env": [
       "jest"
     ]
+  },
+  "jest": {
+    "clearMocks": true,
+    "resetMocks": true
   }
 }

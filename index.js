@@ -42,6 +42,7 @@ const mergeTracksTask = require('./lib/task/mergeTracks')
 const replacePlaylistTracksTask = require('./lib/task/replacePlaylistTracks')
 const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
+const writeTracksToFileTask = require('./lib/task/writeTracksToFile')
 
 /**
  * Log an error message to the console. If debug is enabled log original error
@@ -139,7 +140,8 @@ function validateConfig (config) {
     mergeTracksTask,
     replacePlaylistTracksTask,
     shuffleTracksTask,
-    sortTracksTask
+    sortTracksTask,
+    writeTracksToFileTask
   ])
   const { error } = schema.validate(config)
 
@@ -408,6 +410,12 @@ async function executeTasks (config, spotify) {
           break
         case 'tracks.sort':
           trackCollections[taskId] = await sortTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
+        case 'tracks.write_to_file':
+          await writeTracksToFileTask.execute({
             config: taskConfig,
             trackCollections
           })

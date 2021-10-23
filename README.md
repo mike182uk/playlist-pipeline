@@ -85,6 +85,7 @@ A pipeline can contain an unlimited number of tasks and each task will be execut
 - [`tracks.shuffle`](#tracksshuffle)
 - [`tracks.filter`](#tracksfilter)
 - [`playlist.replace_tracks`](#playlistreplace_tracks)
+- [`tracks.write_to_file`](#trackswrite_to_file)
 
 #### `playlist.get_tracks`
 
@@ -510,6 +511,44 @@ Replace the tracks in a playlist with tracks from a track collection
 
 - `spotify_url` - Spotify URL for playlist
 - `tracks` - ID of a task that returns a track collection
+
+---
+
+#### `tracks.write_to_file`
+
+Write the tracks in a track collection to a file
+
+```yml
+<task_id>:
+  type: tracks.write_to_file
+  tracks: get_tracks
+  format: json
+  fields:
+    - name
+    - artist
+    - album
+    - releaseDate
+  filename: pop_punks_not_dead_tracks
+```
+
+- `tracks` - ID of a task that returns a track collection
+- `format` - The format to use for the data in the file
+  - Valid formats are:
+    - `json`
+- `fields` - The fields to include in the data
+  - Valid fields are:
+    - `album` - Album name
+    - `artist` - Artist name
+    - `name` - Track name
+    - `trackNumber` - Track number
+    - `genre` - Artist genre
+    - `explicit` - Track explicitness
+    - `popularity` - Track popularity (out of 100) 
+    - `duration` - Track duration (in milliseconds)
+    - `releaseDate` - Track release date
+- `filename` - The name of the file to write to (without extension)
+
+**If a file already exists with the `filename` specified in the task config, it will be overwritten**
 
 ---
 
