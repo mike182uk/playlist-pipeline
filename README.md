@@ -1,15 +1,26 @@
-# playlist-pipeline
-
-[![Version](https://img.shields.io/npm/v/playlist-pipeline.svg?style=flat-square)](https://www.npmjs.com/package/playlist-pipeline)
-[![Build Status](https://img.shields.io/github/workflow/status/mike182uk/playlist-pipeline/CI/master?style=flat-square)](https://github.com/mike182uk/playlist-pipeline/actions?query=workflow%3ACI)
-[![npm](https://img.shields.io/npm/dm/playlist-pipeline.svg?style=flat-square)](https://www.npmjs.com/package/playlist-pipeline)
-[![License](https://img.shields.io/github/license/mike182uk/playlist-pipeline.svg?style=flat-square)](https://www.npmjs.com/package/playlist-pipeline)
-
-A CLI for programmatically organising, pruning & grooming your Spotify playlists
+<div align="center">
+  <img src="icon.png" height="150px" width="150px" />
+  <h1>playlist-pipeline</h1>
+  <p><strong>A CLI for programmatically organising, pruning & grooming your Spotify playlists</strong></p>
+  <div>
+    <a href="https://www.npmjs.com/package/playlist-pipeline">
+      <img src="https://img.shields.io/npm/v/playlist-pipeline.svg?style=flat-square" alt="Version" />
+    </a>
+    <a href="https://github.com/mike182uk/playlist-pipeline/actions?query=workflow%3ACI">
+      <img src="https://img.shields.io/github/workflow/status/mike182uk/playlist-pipeline/CI/master?style=flat-square" alt="Build Status" />
+    </a>
+    <a href="https://www.npmjs.com/package/playlist-pipeline">
+      <img src="https://img.shields.io/npm/dm/playlist-pipeline.svg?style=flat-square" alt="npm" />
+    </a>
+    <a href="https://www.npmjs.com/package/playlist-pipeline">
+      <img src="https://img.shields.io/github/license/mike182uk/playlist-pipeline.svg?style=flat-square" alt="License" />
+    </a>
+  </div>
+</div>
 
 ## Prerequisites
 
-- [Node.JS 16](https://nodejs.org/en/download/)
+- [Node.JS >=12](https://nodejs.org/en/download/)
 - A paid for [Spotify account](https://www.spotify.com/uk/premium/#plans)
 
 ## Installation
@@ -245,7 +256,7 @@ If you have more advanced sorting needs, you can group tracks together before so
 **The first track of each group is used to sort the groups.**
 
 ```yml
-# Group tracks by album, sort tracks by trackNumber, sort groups by releaseDate 
+# Group tracks by album, sort tracks by track number ascending, sort groups by release date ascending 
 
 <task_id>:
   type: tracks.filter
@@ -579,3 +590,7 @@ This is only really useful for developers and super power users.
 ### How does `playlist-pipeline` authenticate with Spotify?
 
 [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce). This method is used so that the acquired access token can be refereshed when it has expired, without the need to provide the client secret.
+
+---
+
+_Icon made by [surang](https://www.flaticon.com/authors/surang) from [Flaticon](https://www.flaticon.com)_

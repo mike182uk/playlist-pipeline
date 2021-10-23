@@ -1,4 +1,4 @@
-name: group by album, sort tracks by trackNumber, sort groups by releaseDate
+name: group by album, sort tracks by track number, sort groups by release date
 
 tasks:
   get_tracks:

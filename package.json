@@ -10,9 +10,13 @@
   },
   "bin": "./index.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=12"
   },
-  "author": "Michael David Barrett <mike182uk@gmail.com>",
+  "author": {
+    "name": "Michael Barrett",
+    "email": "mike182uk@gmail.com",
+    "url": "https://mdb.sh"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,8 +28,10 @@
   },
   "keywords": [
     "spotify",
+    "spotify api",
     "playlist",
-    "pipeline"
+    "playlist manager",
+    "music"
   ],
   "dependencies": {
     "commander": "8.3.0",
