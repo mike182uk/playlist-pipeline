@@ -347,7 +347,7 @@ async function executeTasks (config, spotify) {
   logInfo(`executing tasks for "${config.name}"`)
 
   debugApp(`${taskIds.length} tasks to execute`)
-  logInfo(`${taskIds.length} tasks to execute...`)
+  logInfo(`${taskIds.length} tasks to execute`)
 
   for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
@@ -362,18 +362,24 @@ async function executeTasks (config, spotify) {
             config: taskConfig,
             spotify
           })
+
+          debugApp(`${trackCollections[taskId].length} tracks retrieved`)
           break
         case 'library.get_tracks':
           trackCollections[taskId] = await getLibraryTracksTask.execute({
             config: taskConfig,
             spotify
           })
+
+          debugApp(`${trackCollections[taskId].length} tracks retrieved`)
           break
         case 'playlist.get_tracks':
           trackCollections[taskId] = await getPlaylistTracksTask.execute({
             config: taskConfig,
             spotify
           })
+
+          debugApp(`${trackCollections[taskId].length} tracks retrieved`)
           break
         case 'playlist.replace_tracks':
           await replacePlaylistTracksTask.execute({

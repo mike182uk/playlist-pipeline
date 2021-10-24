@@ -548,6 +548,8 @@ echo '{"name":"foo bar baz","tasks":{}}' | playlist-pipeline run
 
 This is useful if you are dynamically generating config.
 
+See the [examples/json](examples/json) directory for examples.
+
 ### Using your own access token
 
 You can provide your own access token by passing the token option (`-t`) when executing the run command:
