@@ -189,6 +189,16 @@ Sort tracks in a track collection by a specified field(s)
     - `trackNumber` - Track number
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
+    - `acousticness` - Track acousticness (0.0 - 1.0)
+    - `danceability` - Track danceability (0.0 - 1.0)
+    - `energy` - Track energy (0.0 - 1.0)
+    - `instrumentalness` - Track instrumentalness (0.0 - 1.0)
+    - `liveness` - Track liveness (0.0 - 1.0)
+    - `loudness` - Track loudness (0.0 - 1.0)
+    - `speechiness` - Track speechiness (0.0 - 1.0)
+    - `tempo` - Track tempo (BPM)
+    - `timeSignature` - Track time signature
+    - `valence` - Track valence (0.0 - 1.0)
   - Valid directions are `asc` (`ascending`, `A-Z`, `0-9`) and `desc` (`descending`, `Z-A`, `9-0`).
 
 Multiple fields can be used to sort:
@@ -228,10 +238,7 @@ If you have more advanced sorting needs, you can group tracks together before so
   - `artistId` - Artist ID
   - `artistUri` - Artist URI
   - `name` - Track name
-  - `releaseDate` - Track release date
   - `trackNumber` - Track number
-  - `popularity` - Track popularity (out of 100)
-  - `duration` - Track duration (in milliseconds)
 - `sort` - The field(s) to sort the tracks by and the direction
   - Valid fields are:
     - `album` - Album name
@@ -241,19 +248,25 @@ If you have more advanced sorting needs, you can group tracks together before so
     - `trackNumber` - Track number
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
+    - `acousticness` - Track acousticness (0.0 - 1.0)
+    - `danceability` - Track danceability (0.0 - 1.0)
+    - `energy` - Track energy (0.0 - 1.0)
+    - `instrumentalness` - Track instrumentalness (0.0 - 1.0)
+    - `liveness` - Track liveness (0.0 - 1.0)
+    - `loudness` - Track loudness (0.0 - 1.0)
+    - `speechiness` - Track speechiness (0.0 - 1.0)
+    - `tempo` - Track tempo (BPM)
+    - `timeSignature` - Track time signature
+    - `valence` - Track valence (0.0 - 1.0)
   - Valid directions are `asc` (`ascending`, `A-Z`, `0-9`) and `desc` (`descending`, `Z-A`, `9-0`).
 - `sort_group` - The field(s) to sort the groups by and the direction
   - Valid fields are:
     - `album` - Album name
     - `artist` - Artist name
-    - `name` - Track name
     - `releaseDate` - Track release date
-    - `trackNumber` - Track number
-    - `popularity` - Track popularity (out of 100)
-    - `duration` - Track duration (in milliseconds)
   - Valid directions are `asc` (`ascending`, `A-Z`, `0-9`) and `desc` (`descending`, `Z-A`, `9-0`).
 
-**The first track of each group is used to sort the groups.**
+**The first track of each group is used to sort the groups - This only really makes group sorting useful if the field that is being used to sort the groups is common amongst all the tracks in the group.**
 
 ```yml
 # Group tracks by album, sort tracks by track number ascending, sort groups by release date ascending 

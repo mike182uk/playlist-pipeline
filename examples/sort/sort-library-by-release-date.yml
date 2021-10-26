@@ -10,7 +10,7 @@ tasks:
     sort:
       releaseDate: asc
 
- save_tracks:
+  save_tracks:
     type: playlist.replace_tracks
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
     tracks: sort_tracks
