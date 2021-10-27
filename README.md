@@ -532,14 +532,11 @@ Write the tracks in a track collection to a file
 ```yml
 <task_id>:
   type: tracks.write_to_file
-  tracks: get_tracks
-  format: json
-  fields:
-    - name
-    - artist
-    - album
-    - releaseDate
-  filename: pop_punks_not_dead_tracks
+  tracks: <id_of_task_returning_a_track_collection>
+  format: <format>
+  fields: 
+    - <field>
+  filename: <name_of_file_to_write_tracks_to>
 ```
 
 - `tracks` - ID of a task that returns a track collection
@@ -548,15 +545,21 @@ Write the tracks in a track collection to a file
     - `json`
 - `fields` - The fields to include in the data
   - Valid fields are:
-    - `album` - Album name
-    - `artist` - Artist name
+    - `id` - Track ID
     - `name` - Track name
     - `trackNumber` - Track number
-    - `genre` - Artist genre
-    - `explicit` - Track explicitness
-    - `popularity` - Track popularity (out of 100) 
-    - `duration` - Track duration (in milliseconds)
+    - `album` - Album name
+    - `albumId` - Album ID
+    - `albumUri` - Album URI
     - `releaseDate` - Track release date
+    - `artist` - Artist name
+    - `artistId` - Artist ID
+    - `artistUri` - Artist URI
+    - `uri` - Track URI
+    - `genre` - Artist genre
+    - `popularity` - Track popularity (out of 100)
+    - `duration` - Track duration (in milliseconds)
+    - `explicit` - Track explicitness
 - `filename` - The name of the file to write to (without extension)
 
 **If a file already exists with the `filename` specified in the task config, it will be overwritten**
