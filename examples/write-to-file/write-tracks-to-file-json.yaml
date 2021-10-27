@@ -1,0 +1,17 @@
+name: write tracks to file
+
+tasks:
+  get_tracks:
+    type: playlist.get_tracks
+    spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX1ewVhAJ17m4?si=343476d216844eb6 # Playlist - Pop Punk's Not Dead
+
+  dump_tracks:
+    type: tracks.write_to_file
+    tracks: get_tracks
+    format: json
+    fields:
+      - name
+      - artist
+      - album
+      - releaseDate
+    filename: pop_punks_not_dead_tracks
