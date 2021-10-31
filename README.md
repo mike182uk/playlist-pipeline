@@ -618,7 +618,7 @@ If you are using your own Spotify app (see next section) you will have access to
 
 You can use your own Spotify app with `playlist-pipeline`, although this will require modification of the source code. You will need to create an app in your Spotify developer account that has the correct scopes and redirect URI(s) that are required by the `playlist-pipeline` CLI. Once you have created the Spotify app you will need to update [`index.js`](index.js) with the details from your Spotify app (see the constants defined at the top of file).
 
-The default redirect URI for `playlist-pipeline` is : `http://localhost:8736`
+The default redirect URI for `playlist-pipeline` is : `http://localhost:3182`
 
 The required scopes for `playlist-pipeline` are:
   - `playlist-modify-public` - Needed to save changes to public playlists

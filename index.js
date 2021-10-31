@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const SPOTIFY_APP_CLIENT_ID = '231c69aaf23c4e9ba6e349c56130f56f'
-const SPOTIFY_APP_REDIRECT_URI_PORT = 8736
+const SPOTIFY_APP_REDIRECT_URI_PORT = 3182
 const SPOTIFY_APP_REDIRECT_URI = `http://localhost:${SPOTIFY_APP_REDIRECT_URI_PORT}`
 
 // https://developer.spotify.com/documentation/general/guides/scopes/
