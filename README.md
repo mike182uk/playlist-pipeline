@@ -562,15 +562,13 @@ Write the tracks in a track collection to a file
     - `explicit` - Track explicitness
 - `filename` - The name of the file to write to (without extension)
 
-**If a file already exists with the `filename` specified in the task config, it will be overwritten**
-
 ---
 
 **See the [examples](examples) directory for further config file examples.**
 
 ## Advanced Usage
 
-Here be dragons... 🐉
+Here be dragons 🐉
 
 ### Debugging
 
@@ -590,7 +588,7 @@ echo '{"name":"foo bar baz","tasks":{}}' | playlist-pipeline run
 
 This is useful if you are dynamically generating config.
 
-See the [examples/json](examples/json) directory for examples.
+See the [examples/stdin](examples/stdin) directory for examples.
 
 ### Using your own access token
 
@@ -606,7 +604,7 @@ This is useful if you are handling authentication externally to `playlist-pipeli
 
 #### Obtaining your own access token
 
-You will have needed to given `playlist-pipeline` permission to access your account before you can obtain an access token manually. Once you have done this you can follow the guides here to retrieve an access token:
+You will have needed to have given `playlist-pipeline` permission to access your account before you can obtain an access token manually. Once you have done this you can follow the guides here to retrieve an access token:
 
 https://developer.spotify.com/documentation/general/guides/authorization-guide/
 
@@ -616,7 +614,7 @@ If you are using your own Spotify app (see next section) you will have access to
 
 ### Using your own Spotify app
 
-You can use your own Spotify app with `playlist-pipeline`, although this will require modification of the source code. You will need to create an app in your Spotify developer account that has the correct scopes and redirect URI(s) that are required by the `playlist-pipeline` CLI. Once you have created the Spotify app you will need to update [`index.js`](index.js) with the details from your Spotify app (see the constants defined at the top of file).
+You can use your own Spotify app with `playlist-pipeline`, although this will require modification of the source code. You will need to create an app in your Spotify developer account that has the correct scopes and redirect URI(s) that are required by `playlist-pipeline`. Once you have created the Spotify app you will need to update [`index.js`](index.js) with the details from your Spotify app (see the constants defined at the top of file).
 
 The default redirect URI for `playlist-pipeline` is : `http://localhost:3182`
 

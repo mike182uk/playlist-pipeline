@@ -1,6 +1,6 @@
 const { spawn } = require('child_process')
 
-const shuffleTracks = {
+const config = {
   name: 'shuffle tracks',
   tasks: {
     get_tracks: {
@@ -18,7 +18,7 @@ const shuffleTracks = {
     }
   }
 }
-const json = JSON.stringify(shuffleTracks)
+const json = JSON.stringify(config)
 const accessToken = 'ABC123'
 
 // echo <json> | npx playlist-pipeline run -t <token>

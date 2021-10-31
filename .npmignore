@@ -1,3 +1,5 @@
 /*
 !/index.js
 !/lib
+/lib/*/*.test.js
+/lib/test
