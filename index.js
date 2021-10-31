@@ -28,6 +28,7 @@ const SpotifyWebApi = require('spotify-web-api-node')
 const pkg = require('./package.json')
 const { buildSchema } = require('./lib/config/validation')
 const { loadYAMLConfig } = require('./lib/config/yaml')
+const { usesAlbumField, usesGenreField } = require('./lib/config/analysis')
 const {
   createAuthorizationURL,
   getAccessToken,
@@ -351,6 +352,13 @@ async function executeTasks (config, spotify) {
   debugApp(`${taskIds.length} tasks to execute`)
   logInfo(`${taskIds.length} tasks to execute`)
 
+  const ctx = {
+    retrieveAlbumDetails: usesAlbumField(config),
+    retrieveArtistGenreDetails: usesGenreField(config)
+  }
+
+  debugApp('context:', ctx)
+
   for (const taskId of taskIds) {
     const taskConfig = config.tasks[taskId]
 
@@ -362,6 +370,7 @@ async function executeTasks (config, spotify) {
         case 'album.get_tracks':
           trackCollections[taskId] = await getAlbumTracksTask.execute({
             config: taskConfig,
+            ctx,
             spotify
           })
 
@@ -370,6 +379,7 @@ async function executeTasks (config, spotify) {
         case 'library.get_tracks':
           trackCollections[taskId] = await getLibraryTracksTask.execute({
             config: taskConfig,
+            ctx,
             spotify
           })
 
@@ -378,6 +388,7 @@ async function executeTasks (config, spotify) {
         case 'playlist.get_tracks':
           trackCollections[taskId] = await getPlaylistTracksTask.execute({
             config: taskConfig,
+            ctx,
             spotify
           })
 
