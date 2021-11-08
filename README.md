@@ -96,7 +96,7 @@ A pipeline can contain an unlimited number of tasks and each task will be execut
 - [`tracks.shuffle`](#tracksshuffle)
 - [`tracks.filter`](#tracksfilter)
 - [`playlist.replace_tracks`](#playlistreplace_tracks)
-- [`tracks.write_to_file`](#trackswrite_to_file)
+- [`tracks.export`](#export)
 
 #### `playlist.get_tracks`
 
@@ -525,25 +525,25 @@ Replace the tracks in a playlist with tracks from a track collection
 
 ---
 
-#### `tracks.write_to_file`
+#### `tracks.export`
 
-Write the tracks in a track collection to a file
+Export the tracks in a track collection to a file
 
 ```yml
 <task_id>:
-  type: tracks.write_to_file
+  type: tracks.export
   tracks: <id_of_task_returning_a_track_collection>
   format: <format>
   fields: 
     - <field>
-  filename: <name_of_file_to_write_tracks_to>
+  filename: <name_of_file_to_export_tracks_to>
 ```
 
 - `tracks` - ID of a task that returns a track collection
-- `format` - The format to use for the data in the file
+- `format` - The format to use for the export data
   - Valid formats are:
     - `json`
-- `fields` - The fields to include in the data
+- `fields` - The fields to include in the export data
   - Valid fields are:
     - `id` - Track ID
     - `name` - Track name
@@ -560,7 +560,7 @@ Write the tracks in a track collection to a file
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
     - `explicit` - Track explicitness
-- `filename` - The name of the file to write to (without extension)
+- `filename` - The name of the file to export to (without extension)
 
 ---
 

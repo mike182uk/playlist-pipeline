@@ -1,4 +1,4 @@
-name: write tracks to file
+name: export tracks
 
 tasks:
   get_tracks:
@@ -6,7 +6,7 @@ tasks:
     spotify_url: https://open.spotify.com/playlist/37i9dQZF1DX1ewVhAJ17m4?si=343476d216844eb6 # Playlist - Pop Punk's Not Dead
 
   dump_tracks:
-    type: tracks.write_to_file
+    type: tracks.export
     tracks: get_tracks
     format: json
     fields:

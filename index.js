@@ -35,6 +35,7 @@ const {
   getRefreshedAccessToken
 } = require('./lib/spotify/auth')
 const dedupeTracksTask = require('./lib/task/dedupeTracks')
+const exportTracksTask = require('./lib/task/exportTracks')
 const filterTracksTask = require('./lib/task/filterTracks')
 const getAlbumTracksTask = require('./lib/task/getAlbumTracks')
 const getLibraryTracksTask = require('./lib/task/getLibraryTracks')
@@ -43,7 +44,6 @@ const mergeTracksTask = require('./lib/task/mergeTracks')
 const replacePlaylistTracksTask = require('./lib/task/replacePlaylistTracks')
 const shuffleTracksTask = require('./lib/task/shuffleTracks')
 const sortTracksTask = require('./lib/task/sortTracks')
-const writeTracksToFileTask = require('./lib/task/writeTracksToFile')
 
 /**
  * Log an error message to the console. If debug is enabled log original error
@@ -134,6 +134,7 @@ async function loadConfig (configPath) {
 function validateConfig (config) {
   const schema = buildSchema([
     dedupeTracksTask,
+    exportTracksTask,
     filterTracksTask,
     getAlbumTracksTask,
     getLibraryTracksTask,
@@ -141,8 +142,7 @@ function validateConfig (config) {
     mergeTracksTask,
     replacePlaylistTracksTask,
     shuffleTracksTask,
-    sortTracksTask,
-    writeTracksToFileTask
+    sortTracksTask
   ])
   const { error } = schema.validate(config)
 
@@ -407,6 +407,12 @@ async function executeTasks (config, spotify) {
             trackCollections
           })
           break
+        case 'tracks.export':
+          await exportTracksTask.execute({
+            config: taskConfig,
+            trackCollections
+          })
+          break
         case 'tracks.filter':
           trackCollections[taskId] = await filterTracksTask.execute({
             config: taskConfig,
@@ -427,12 +433,6 @@ async function executeTasks (config, spotify) {
           break
         case 'tracks.sort':
           trackCollections[taskId] = await sortTracksTask.execute({
-            config: taskConfig,
-            trackCollections
-          })
-          break
-        case 'tracks.write_to_file':
-          await writeTracksToFileTask.execute({
             config: taskConfig,
             trackCollections
           })
