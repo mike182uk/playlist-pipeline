@@ -97,6 +97,7 @@ A pipeline can contain an unlimited number of tasks and each task will be execut
 - [`tracks.filter`](#tracksfilter)
 - [`playlist.replace_tracks`](#playlistreplace_tracks)
 - [`tracks.export`](#export)
+- [`playlist.update_description`](#playlistupdate_description)
 
 #### `playlist.get_tracks`
 
@@ -561,6 +562,22 @@ Export the tracks in a track collection to a file
     - `duration` - Track duration (in milliseconds)
     - `explicit` - Track explicitness
 - `filename` - The name of the file to export to (without extension)
+
+---
+
+#### `playlist.update_description`
+
+Update the description of a playlist
+
+```yml
+<task_id>:
+  type: playlist.update_description
+  spotify_url: https://open.spotify.com/playlist/<playlist_id>
+  description: <description>
+```
+
+- `spotify_url` - Spotify URL for playlist
+- `description` - Description for playlist
 
 ---
 
