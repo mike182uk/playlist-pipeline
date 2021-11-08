@@ -97,7 +97,7 @@ A pipeline can contain an unlimited number of tasks and each task will be execut
 - [`tracks.filter`](#tracksfilter)
 - [`playlist.replace_tracks`](#playlistreplace_tracks)
 - [`tracks.export`](#export)
-- [`playlist.update_description`](#playlistupdate_description)
+- [`playlist.update_details`](#playlistupdate_details)
 
 #### `playlist.get_tracks`
 
@@ -565,25 +565,27 @@ Export the tracks in a track collection to a file
 
 ---
 
-#### `playlist.update_description`
+#### `playlist.update_details`
 
-Update the description of a playlist
+Update the details of a playlist
 
 ```yml
 <task_id>:
-  type: playlist.update_description
+  type: playlist.update_details
   spotify_url: https://open.spotify.com/playlist/<playlist_id>
+  name: <name>
   description: <description>
 ```
 
 - `spotify_url` - Spotify URL for playlist
+- `name` - Name of playlist
 - `description` - Description for playlist
 
 You can include the current date in the description using the `date` tag:
 
 ```yml
 <task_id>:
-  type: playlist.update_description
+  type: playlist.update_details
   spotify_url: https://open.spotify.com/playlist/<playlist_id>
   description: 'Last Updated: {{ date "dd MMMM Y" }}'
 ```

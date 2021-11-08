@@ -1,7 +1,8 @@
-name: update playlist description
+name: update playlist details
 
 tasks:
   update_playlist_details:
     type: playlist.update_details
     spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
-    description: Hello World!
+    name: Foo bar baz
+    description: Baz bar foo
