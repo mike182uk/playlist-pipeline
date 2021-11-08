@@ -1,0 +1,7 @@
+name: update playlist description including timestamp
+
+tasks:
+  update_playlist_description:
+    type: playlist.update_description
+    spotify_url: https://open.spotify.com/playlist/70yOX4JIqkUL3optIQmicc?si=eade5d89aa7349a4 # Dev playlist - Save
+    description: 'Last updated: {{ date "dd MMMM Y" }}'

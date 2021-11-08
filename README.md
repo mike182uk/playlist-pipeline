@@ -579,6 +579,17 @@ Update the description of a playlist
 - `spotify_url` - Spotify URL for playlist
 - `description` - Description for playlist
 
+You can include the current date in the description using the `date` tag:
+
+```yml
+<task_id>:
+  type: playlist.update_description
+  spotify_url: https://open.spotify.com/playlist/<playlist_id>
+  description: 'Last Updated: {{ date "dd MMMM Y" }}'
+```
+
+`{{ date "dd MMMM Y" }}` will be replaced with the current date using the provided format. See [here](https://date-fns.org/v2.25.0/docs/format) for details on how to format the date.
+
 ---
 
 **See the [examples](examples) directory for further config file examples.**
