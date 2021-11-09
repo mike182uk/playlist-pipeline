@@ -410,6 +410,22 @@ When there are multiple fields in the filter the tracks in the track collection 
         value: box car racer
 ```
 
+You can also filter based on multiple conditions per field (this acts as an **AND** not an **OR**):
+
+```yml
+# Filter tracks that were released after 2003 but before 2006
+
+<task_id>:
+  type: tracks.filter
+  tracks: <id_of_task_returning_a_track_collection>
+  filter:
+    releaseDate:
+      - operator: gt
+        value: 2003
+      - operator: lt
+        value: 2006
+```
+
 ##### Shorthand filters 
 
 A shorthand syntax is also supported so that you do not have to explicitly define the `operator` and `value` of a filter:
@@ -494,6 +510,18 @@ A few examples:
   tracks: <id_of_task_returning_a_track_collection>
   filter:
     popularity: ">=70"
+```
+
+```yml
+# Filter tracks that were released after 2003 but before 2006
+
+<task_id>:
+  type: tracks.filter
+  tracks: <id_of_task_returning_a_track_collection>
+  filter:
+    releaseDate: 
+      - "> 2003"
+      - "< 2006
 ```
 
 Quotes (`"` or `'`) are needed around a value that contains an operator ( `!`, `<`, `>`, `>=`, `<=`)
