@@ -188,6 +188,7 @@ Sort tracks in a track collection by a specified field(s)
     - `artist` - Artist name
     - `name` - Track name
     - `releaseDate` - Track release date
+    - `releaseYear` - Track release year
     - `trackNumber` - Track number
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
@@ -231,6 +232,7 @@ If you have more advanced sorting needs, you can group tracks together before so
   - `artistUri` - Artist URI
   - `name` - Track name
   - `releaseDate` - Track release date
+  - `releaseYear` - Track release year
   - `trackNumber` - Track number
   - `popularity` - Track popularity (out of 100)
   - `duration` - Track duration (in milliseconds)
@@ -240,6 +242,7 @@ If you have more advanced sorting needs, you can group tracks together before so
     - `artist` - Artist name
     - `name` - Track name
     - `releaseDate` - Track release date
+    - `releaseYear` - Track release year
     - `trackNumber` - Track number
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
@@ -250,6 +253,7 @@ If you have more advanced sorting needs, you can group tracks together before so
     - `artist` - Artist name
     - `name` - Track name
     - `releaseDate` - Track release date
+    - `releaseYear` - Track release year
     - `trackNumber` - Track number
     - `popularity` - Track popularity (out of 100)
     - `duration` - Track duration (in milliseconds)
@@ -312,6 +316,7 @@ Filter tracks in a track collection by a specified field(s)
     - `popularity` - Track popularity (out of 100) (`number`)
     - `duration` - Track duration (in milliseconds) (`number`)
     - `releaseDate` - Track release date (`date`)
+    - `releaseYear` - Track release year (`number`)
   - Valid operators are:
     - `eq` - Equal to
     - `neq` - Not equal to
@@ -329,6 +334,7 @@ Filter tracks in a track collection by a specified field(s)
     - `popularity` - `eq`, `neq`, `gt`, `gte`, `lt`, `lte`
     - `duration`  - `eq`, `neq`, `gt`, `gte`, `lt`, `lte`
     - `releaseDate`  - `gt`, `lt`
+    - `releaseYear` - `eq`, `neq`, `gt`, `gte`, `lt`, `lte`
 
 ```yml
 # Filter tracks that are less than 3 minutes
@@ -413,16 +419,16 @@ When there are multiple fields in the filter the tracks in the track collection 
 You can also filter based on multiple conditions per field (this acts as an **AND** not an **OR**):
 
 ```yml
-# Filter tracks that were released after 2003 but before 2006
+# Filter tracks that were released 2003 - 2006
 
 <task_id>:
   type: tracks.filter
   tracks: <id_of_task_returning_a_track_collection>
   filter:
-    releaseDate:
-      - operator: gt
+    releaseYear:
+      - operator: gte
         value: 2003
-      - operator: lt
+      - operator: lte
         value: 2006
 ```
 
@@ -513,15 +519,15 @@ A few examples:
 ```
 
 ```yml
-# Filter tracks that were released after 2003 but before 2006
+# Filter tracks that were released 2003 - 2006
 
 <task_id>:
   type: tracks.filter
   tracks: <id_of_task_returning_a_track_collection>
   filter:
     releaseDate: 
-      - "> 2003"
-      - "< 2006
+      - ">= 2003"
+      - "<= 2006"
 ```
 
 Quotes (`"` or `'`) are needed around a value that contains an operator ( `!`, `<`, `>`, `>=`, `<=`)
@@ -581,6 +587,7 @@ Export the tracks in a track collection to a file
     - `albumId` - Album ID
     - `albumUri` - Album URI
     - `releaseDate` - Track release date
+    - `releaseYear` - Track release year
     - `artist` - Artist name
     - `artistId` - Artist ID
     - `artistUri` - Artist URI

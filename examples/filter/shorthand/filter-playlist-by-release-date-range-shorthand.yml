@@ -1,4 +1,4 @@
-name: filter playlist by release date range shorthand
+name: filter playlist by release year range shorthand
 
 tasks:
   get_tracks:
@@ -10,9 +10,9 @@ tasks:
     tracks: get_tracks
     filter:
       # Should only be tracks from "blink-182 - Enema Of The State", "blink-182 - blink-182", "Box Car Racer - Box Car Racer"
-      releaseDate:
-        - '>1998'
-        - '<2004'
+      releaseYear:
+        - '>=1999'
+        - '<=2003'
 
   save_tracks:
     type: playlist.replace_tracks
