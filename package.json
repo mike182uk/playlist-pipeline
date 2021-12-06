@@ -41,7 +41,7 @@
     "get-stdin": "8.0.0",
     "handlebars": "4.7.7",
     "jest-when": "3.4.1",
-    "joi": "17.4.2",
+    "joi": "17.5.0",
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "spotify-web-api-node": "5.0.2"
