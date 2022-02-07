@@ -46,7 +46,7 @@
     "spotify-web-api-node": "5.0.2"
   },
   "devDependencies": {
-    "jest": "27.4.7",
+    "jest": "27.5.0",
     "jest-when": "3.5.0",
     "standard": "16.0.4",
     "temp-write": "4.0.0"
