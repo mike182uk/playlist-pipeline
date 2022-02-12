@@ -16,6 +16,8 @@
       <img src="https://img.shields.io/github/license/mike182uk/playlist-pipeline.svg?style=flat-square" alt="License" />
     </a>
   </div>
+  <br />
+  <p>⚠️ <strong>The official <code>playlist-pipeline</code> Spotify app is still under review by Spotify. For the time being you will need to use your own Spotify app. See details on how to do this <a href="https://github.com/mike182uk/playlist-pipeline#using-your-own-spotify-app">here</a></strong></p>
 </div>
 
 ## Prerequisites
