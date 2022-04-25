@@ -48,7 +48,7 @@
   "devDependencies": {
     "jest": "27.5.1",
     "jest-when": "3.5.0",
-    "standard": "16.0.4",
+    "standard": "17.0.0",
     "temp-write": "4.0.0"
   },
   "standard": {
