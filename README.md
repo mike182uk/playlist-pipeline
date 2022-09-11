@@ -17,13 +17,14 @@
     </a>
   </div>
   <br />
-  <p>⚠️ <strong>The official <code>playlist-pipeline</code> Spotify app is still under review by Spotify. For the time being you will need to use your own Spotify app. See details on how to do this <a href="https://github.com/mike182uk/playlist-pipeline#using-your-own-spotify-app">here</a></strong></p>
+  <p>⚠️ <strong>The official <code>playlist-pipeline</code> Spotify app is still under development. For the time being you will need to use your own Spotify app. See details on how to do this <a href="https://github.com/mike182uk/playlist-pipeline#using-your-own-spotify-app">here</a></strong></p>
 </div>
 
 ## Prerequisites
 
 - [Node.JS >=12](https://nodejs.org/en/download/)
 - A paid for [Spotify account](https://www.spotify.com/uk/premium/#plans)
+- A [Spotify developer account](https://developer.spotify.com/)
 
 ## Installation
 
