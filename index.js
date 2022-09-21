@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-const SPOTIFY_APP_CLIENT_ID = '231c69aaf23c4e9ba6e349c56130f56f'
 const SPOTIFY_APP_REDIRECT_URI_PORT = 3182
 const SPOTIFY_APP_REDIRECT_URI = `http://localhost:${SPOTIFY_APP_REDIRECT_URI_PORT}`
-
 // https://developer.spotify.com/documentation/general/guides/scopes/
 const SPOTIFY_APP_REQUIRED_SCOPES = [
   'playlist-modify-public', // Needed to save changes to public playlists
@@ -14,6 +12,7 @@ const SPOTIFY_APP_REQUIRED_SCOPES = [
 ]
 
 const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
+const APP_DATA_SPOTIFY_APP_CLIENT_ID = 'spotify.app_client_id'
 
 const { Command } = require('commander')
 const Conf = require('conf')
@@ -156,11 +155,13 @@ function validateConfig (config) {
 /**
  * Attempt to authenticate with Spotify using: Authorization Code Flow with Proof Key for Code Exchange (PKCE)
  *
+ * @param {string} clientId
+ *
  * @returns {Promise<object>}
  *
  * @see https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce
  */
-async function authenticate () {
+async function authenticate (clientId) {
   const codeVerifierSize = Math.random() * (128 - 43 + 1) + 43 //  43 = min, 128 = max
   const codeVerifier = crypto.randomBytes(codeVerifierSize)
     .toString('hex')
@@ -172,7 +173,7 @@ async function authenticate () {
   const state = crypto.randomBytes(32).toString('hex')
   const url = createAuthorizationURL({
     redirectUri: SPOTIFY_APP_REDIRECT_URI,
-    clientId: SPOTIFY_APP_CLIENT_ID,
+    clientId,
     scopes: SPOTIFY_APP_REQUIRED_SCOPES,
     state,
     codeChallenge
@@ -210,7 +211,7 @@ async function authenticate () {
         } else {
           const { body, statusCode } = await getAccessToken({
             redirectUri: SPOTIFY_APP_REDIRECT_URI,
-            clientId: SPOTIFY_APP_CLIENT_ID,
+            clientId,
             code: queryParams.get('code'),
             codeVerifier
           })
@@ -259,8 +260,10 @@ async function authenticate () {
  * @returns {Promise<SpotifyWebApi>}
  */
 async function initSpotify (appData, userProvidedAccessToken) {
+  const clientId = appData.get(APP_DATA_SPOTIFY_APP_CLIENT_ID)
+
   const spotify = new SpotifyWebApi({
-    clientId: SPOTIFY_APP_CLIENT_ID,
+    clientId,
     redirectUri: SPOTIFY_APP_REDIRECT_URI
   })
 
@@ -279,7 +282,7 @@ async function initSpotify (appData, userProvidedAccessToken) {
     if (existingSpotifyAuthData === undefined) {
       debugAuth('auth data not present in app data')
 
-      const { accessToken, refreshToken, expiresAt } = await authenticate()
+      const { accessToken, refreshToken, expiresAt } = await authenticate(clientId)
 
       appData.set(APP_DATA_SPOTIFY_AUTH_KEY, { accessToken, refreshToken, expiresAt })
 
@@ -492,6 +495,11 @@ function initProgram () {
 
         debugApp(`app data location: ${appData.path}`)
 
+        // Check client ID has been set
+        if (appData.has(APP_DATA_SPOTIFY_APP_CLIENT_ID) === false) {
+          throw new Error('no Spotify app client ID has been set, please run the "set-client-id" command')
+        }
+
         // Initialise config
         const config = await loadConfig(configPath)
 
@@ -522,6 +530,23 @@ function initProgram () {
       appData.clear()
 
       logInfo('saved data removed')
+    })
+
+  // Configure "set-client-id" command
+  program
+    .command('set-client-id <client-id>')
+    .option('-d, --debug', 'enable debug output')
+    .description('set the client ID of the Spotify app to use')
+    .action((clientId) => {
+      const appData = new Conf({
+        clearInvalidConfig: true
+      })
+
+      debugApp(`persisting Spotify app client ID "${clientId}" to: ${appData.path}`)
+
+      appData.set(APP_DATA_SPOTIFY_APP_CLIENT_ID, clientId)
+
+      logInfo('Spotify app client ID set')
     })
 
   return {

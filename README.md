@@ -16,8 +16,6 @@
       <img src="https://img.shields.io/github/license/mike182uk/playlist-pipeline.svg?style=flat-square" alt="License" />
     </a>
   </div>
-  <br />
-  <p>⚠️ <strong>The official <code>playlist-pipeline</code> Spotify app is still under development. For the time being you will need to use your own Spotify app. See details on how to do this <a href="https://github.com/mike182uk/playlist-pipeline#using-your-own-spotify-app">here</a></strong></p>
 </div>
 
 ## Prerequisites
@@ -42,11 +40,37 @@ npx playlist-pipeline <command>
 
 ## Usage
 
+Before you can use `playlist-pipeline` you need to have setup and configured an app in your Spotify
+developer account:
+
+1. Login to your developer account
+2. Click the `CREATE AN APP` button
+3. Give your app a name, description and accept Spotify's developer terms of service
+4. Once your app is created, navigate to it and click the `EDIT SETTINGS` button
+5. Add `http://localhost:3182` as a `Redirect URI` and save the changes
+6. Make a note of the `Client ID` for the app (visible on the main page for the app)
+
+Now that the Spotify app has been setup and configured, `playlist-pipeline` should be configured to
+use the the app:
+
+```sh
+playlist-pipeline set-client-id <your-app-client-id>
+```
+
+`playlist-pipeline` has now been configured and can be used:
+
 ```sh
 playlist-pipeline run <path-to-config-file>
 ```
 
-If this is the first time you are executing `playlist-pipeline` you will be required to provide permission for the Playlist Pipeline Spotify app to access your account (follow the instructions on the terminal).
+If this is the first time you are executing `playlist-pipeline` you will be required to provide permission for the app you have previously created to access your account (follow the instructions on the terminal).
+
+`playlist-pipeline` will request the following scopes:
+  - `playlist-modify-public` - Needed to save changes to public playlists
+  - `playlist-modify-private` - Needed to save changes to private playlists
+  - `playlist-read-private` - Needed to read data from private playlists
+  - `playlist-read-collaborative` - Needed to read data from collaborative playlists
+  - `user-library-read` - Needed to read data from library
 
 `playlist-pipeline` will store the access token retrieved from Spotify locally and encrypt it. To remove all data saved by `playlist-pipeline` use the `reset` command:
 
@@ -675,25 +699,6 @@ This is useful if you are handling authentication externally to `playlist-pipeli
 You will have needed to have given `playlist-pipeline` permission to access your account before you can obtain an access token manually. Once you have done this you can follow the guides here to retrieve an access token:
 
 https://developer.spotify.com/documentation/general/guides/authorization-guide/
-
-You will only be able to use the methods that do not require a client secret.
-
-If you are using your own Spotify app (see next section) you will have access to the client secret for your app and will be able to use the methods that require it.
-
-### Using your own Spotify app
-
-You can use your own Spotify app with `playlist-pipeline`, although this will require modification of the source code. You will need to create an app in your Spotify developer account that has the correct scopes and redirect URI(s) that are required by `playlist-pipeline`. Once you have created the Spotify app you will need to update [`index.js`](index.js) with the details from your Spotify app (see the constants defined at the top of file).
-
-The default redirect URI for `playlist-pipeline` is : `http://localhost:3182`
-
-The required scopes for `playlist-pipeline` are:
-  - `playlist-modify-public` - Needed to save changes to public playlists
-  - `playlist-modify-private` - Needed to save changes to private playlists
-  - `playlist-read-private` - Needed to read data from private playlists
-  - `playlist-read-collaborative` - Needed to read data from collaborative playlists
-  - `user-library-read` - Needed to read data from library
-
-This is only really useful for developers and super power users.
 
 ## FAQS
 
