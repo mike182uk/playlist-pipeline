@@ -20,7 +20,7 @@
 
 ## Prerequisites
 
-- [Node.JS >=12](https://nodejs.org/en/download/)
+- [Node.js >=16](https://nodejs.org/en/download/)
 - A paid for [Spotify account](https://www.spotify.com/uk/premium/#plans)
 - A [Spotify developer account](https://developer.spotify.com/)
 
