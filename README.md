@@ -51,7 +51,7 @@ developer account:
 6. Make a note of the `Client ID` for the app (visible on the main page for the app)
 
 Now that the Spotify app has been setup and configured, `playlist-pipeline` should be configured to
-use the the app:
+use the app:
 
 ```sh
 playlist-pipeline set-client-id <your-app-client-id>
@@ -696,7 +696,7 @@ This is useful if you are handling authentication externally to `playlist-pipeli
 
 #### Obtaining your own access token
 
-You will have needed to have given `playlist-pipeline` permission to access your account before you can obtain an access token manually. Once you have done this you can follow the guides here to retrieve an access token:
+You will have needed to have given your Spotify app permission to access your account before you can obtain an access token manually. Once you have done this you can follow the guides here to retrieve an access token:
 
 https://developer.spotify.com/documentation/general/guides/authorization-guide/
 
@@ -705,6 +705,11 @@ https://developer.spotify.com/documentation/general/guides/authorization-guide/
 ### How does `playlist-pipeline` authenticate with Spotify?
 
 [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce). This method is used so that the acquired access token can be refereshed when it has expired, without the need to provide the client secret.
+
+### Why do I need to use my own Spotify app?
+
+The original intention was to release a Spotify app for use with `playlist-pipeline` so that this
+step would not be needed, but unfortuntately CLI apps like this do not fit with Spotify's vision for the Spotify app platform 😢
 
 ---
 
