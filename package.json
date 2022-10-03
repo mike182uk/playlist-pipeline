@@ -34,7 +34,7 @@
     "music"
   ],
   "dependencies": {
-    "commander": "9.4.0",
+    "commander": "9.4.1",
     "conf": "10.2.0",
     "date-fns": "2.29.3",
     "debug": "4.3.4",
