@@ -7,7 +7,7 @@
       <img src="https://img.shields.io/npm/v/playlist-pipeline.svg?style=flat-square" alt="Version" />
     </a>
     <a href="https://github.com/mike182uk/playlist-pipeline/actions/workflows/ci.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/mike182uk/playlist-pipeline/ci.yml?branch=master&style=flat-square" alt="Build Status" />
+      <img src="https://img.shields.io/github/actions/workflow/status/mike182uk/playlist-pipeline/ci.yml?branch=main&style=flat-square" alt="Build Status" />
     </a>
     <a href="https://www.npmjs.com/package/playlist-pipeline">
       <img src="https://img.shields.io/npm/dm/playlist-pipeline.svg?style=flat-square" alt="npm" />
