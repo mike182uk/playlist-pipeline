@@ -2,11 +2,9 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -15,19 +13,16 @@ jobs:
 
     strategy:
       matrix:
-        node:
-          - 16
-          - 18
-        os:
-          - ubuntu-latest
+        node: [16, 18, latest]
+        os: [ubuntu-latest]
       fail-fast: false
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup node
-        uses: actions/setup-node@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
