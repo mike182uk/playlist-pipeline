@@ -44,9 +44,9 @@ Before you can use `playlist-pipeline` you need to have setup and configured an 
 developer account:
 
 1. Login to your developer account
-2. Click the `CREATE AN APP` button
+2. Click the `Create app` button
 3. Give your app a name, description and accept Spotify's developer terms of service
-4. Once your app is created, navigate to it and click the `EDIT SETTINGS` button
+4. Once your app is created, navigate to it and click the `Settings` button
 5. Add `http://localhost:3182` as a `Redirect URI` and save the changes
 6. Make a note of the `Client ID` for the app (visible on the main page for the app)
 
