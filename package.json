@@ -36,7 +36,7 @@
   "dependencies": {
     "commander": "10.0.1",
     "conf": "11.0.1",
-    "date-fns": "2.29.3",
+    "date-fns": "2.30.0",
     "debug": "4.3.4",
     "get-stdin": "8.0.0",
     "handlebars": "4.7.7",
