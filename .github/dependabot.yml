@@ -6,5 +6,6 @@ updates:
     schedule:
       interval: monthly
     ignore:
+      - dependency-name: conf
       - dependency-name: get-stdin
       - dependency-name: temp-write
