@@ -2,15 +2,15 @@
   "name": "playlist-pipeline",
   "version": "1.0.0",
   "description": "A CLI for programmatically organising, pruning & grooming your Spotify playlists",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "fmt": "standard --fix",
     "lint": "standard",
-    "test": "jest --verbose --coverage"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' npx jest --verbose --coverage"
   },
   "bin": "./index.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "author": {
     "name": "Michael Barrett",
@@ -35,21 +35,21 @@
   ],
   "dependencies": {
     "commander": "11.1.0",
-    "conf": "10.2.0",
-    "date-fns": "2.30.0",
+    "conf": "12.0.0",
+    "date-fns": "3.3.1",
     "debug": "4.3.4",
-    "get-stdin": "8.0.0",
+    "get-stdin": "9.0.0",
     "handlebars": "4.7.8",
-    "joi": "17.11.0",
+    "joi": "17.12.1",
     "js-yaml": "4.1.0",
-    "lodash": "4.17.21",
+    "lodash-es": "4.17.21",
     "spotify-web-api-node": "5.0.2"
   },
   "devDependencies": {
     "jest": "29.7.0",
     "jest-when": "3.6.0",
     "standard": "17.1.0",
-    "temp-write": "4.0.0"
+    "temp-write": "5.0.0"
   },
   "standard": {
     "env": [

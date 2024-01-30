@@ -1,5 +1,34 @@
 #!/usr/bin/env node
 
+import { Command } from 'commander'
+import Conf from 'conf'
+import crypto from 'crypto'
+import debug from 'debug'
+import getStdin from 'get-stdin'
+import http from 'http'
+import SpotifyWebApi from 'spotify-web-api-node'
+import { readFile } from 'node:fs/promises'
+
+import { buildSchema } from './lib/config/validation.js'
+import { loadYAMLConfig } from './lib/config/yaml.js'
+import { usesAlbumField, usesGenreField } from './lib/config/analysis.js'
+import {
+  createAuthorizationURL,
+  getAccessToken,
+  getRefreshedAccessToken
+} from './lib/spotify/auth.js'
+import * as dedupeTracksTask from './lib/task/dedupeTracks.js'
+import * as exportTracksTask from './lib/task/exportTracks.js'
+import * as filterTracksTask from './lib/task/filterTracks.js'
+import * as getAlbumTracksTask from './lib/task/getAlbumTracks.js'
+import * as getLibraryTracksTask from './lib/task/getLibraryTracks.js'
+import * as getPlaylistTracksTask from './lib/task/getPlaylistTracks.js'
+import * as mergeTracksTask from './lib/task/mergeTracks.js'
+import * as replacePlaylistTracksTask from './lib/task/replacePlaylistTracks.js'
+import * as shuffleTracksTask from './lib/task/shuffleTracks.js'
+import * as sortTracksTask from './lib/task/sortTracks.js'
+import * as updatePlaylistDetailsTask from './lib/task/updatePlaylistDetails.js'
+
 const SPOTIFY_APP_REDIRECT_URI_PORT = 3182
 const SPOTIFY_APP_REDIRECT_URI = `http://localhost:${SPOTIFY_APP_REDIRECT_URI_PORT}`
 // https://developer.spotify.com/documentation/general/guides/scopes/
@@ -10,40 +39,11 @@ const SPOTIFY_APP_REQUIRED_SCOPES = [
   'playlist-read-collaborative', // Needed to read data from collaborative playlists
   'user-library-read' // Needed to read data from library
 ]
-
 const APP_DATA_SPOTIFY_AUTH_KEY = 'spotify.auth'
 const APP_DATA_SPOTIFY_APP_CLIENT_ID = 'spotify.app_client_id'
 
-const { Command } = require('commander')
-const Conf = require('conf')
-const crypto = require('crypto')
-const debug = require('debug')
-const debugApp = require('debug')('app')
-const debugAuth = require('debug')('auth')
-const getStdin = require('get-stdin')
-const http = require('http')
-const SpotifyWebApi = require('spotify-web-api-node')
-
-const pkg = require('./package.json')
-const { buildSchema } = require('./lib/config/validation')
-const { loadYAMLConfig } = require('./lib/config/yaml')
-const { usesAlbumField, usesGenreField } = require('./lib/config/analysis')
-const {
-  createAuthorizationURL,
-  getAccessToken,
-  getRefreshedAccessToken
-} = require('./lib/spotify/auth')
-const dedupeTracksTask = require('./lib/task/dedupeTracks')
-const exportTracksTask = require('./lib/task/exportTracks')
-const filterTracksTask = require('./lib/task/filterTracks')
-const getAlbumTracksTask = require('./lib/task/getAlbumTracks')
-const getLibraryTracksTask = require('./lib/task/getLibraryTracks')
-const getPlaylistTracksTask = require('./lib/task/getPlaylistTracks')
-const mergeTracksTask = require('./lib/task/mergeTracks')
-const replacePlaylistTracksTask = require('./lib/task/replacePlaylistTracks')
-const shuffleTracksTask = require('./lib/task/shuffleTracks')
-const sortTracksTask = require('./lib/task/sortTracks')
-const updatePlaylistDetailsTask = require('./lib/task/updatePlaylistDetails')
+const debugApp = debug('app')
+const debugAuth = debug('auth')
 
 /**
  * Log an error message to the console. If debug is enabled log original error
@@ -463,8 +463,13 @@ async function executeTasks (config, spotify) {
  *
  * @returns {object}
  */
-function initProgram () {
+async function initProgram () {
   const program = new Command()
+  const pkg = JSON.parse(
+    await readFile(
+      new URL('./package.json', import.meta.url)
+    )
+  )
 
   // Initialise program
   program
@@ -490,7 +495,8 @@ function initProgram () {
         const appData = new Conf({
           clearInvalidConfig: true,
           // Dont worry, this is safe to be publicly visible :) - https://github.com/sindresorhus/conf#encryptionkey
-          encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834'
+          encryptionKey: 'e40cbeb4a981bd089cfd149223eb74fbd9e88834',
+          projectName: pkg.name
         })
 
         debugApp(`app data location: ${appData.path}`)
@@ -557,4 +563,4 @@ function initProgram () {
 }
 
 // Go!
-initProgram().run()
+(await initProgram()).run()

@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- 
+- Bump minimum required version of Node.js to `18`
+- Convert to pure ESM
 
 ## 1.0.0
 
