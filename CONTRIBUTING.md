@@ -10,7 +10,11 @@ Please report issues via the issue tracker on [GitHub](https://github.com/playli
 
 ## Pull Requests
 
-- **[Standard JS coding style](http://standardjs.com/index.html)** - Make sure you run `npm run lint` before committing your code.
+- **Lint & format before committing** - [Biome](https://biomejs.dev/)
+  ```sh
+  npm run lint
+  npm run fmt
+  ```
 
 - **Add tests where appropriate** - [Jest](https://jestjs.io/)
 
