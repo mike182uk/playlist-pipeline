@@ -201,39 +201,41 @@ async function authenticate (clientId) {
           return reject(
             new Error('authentication failed: invalid state received to authentication HTTP handler')
           )
-        } else if (queryParams.get('error') !== null) {
+        }
+
+        if (queryParams.get('error') !== null) {
           res.writeHead(500)
           res.end('authentication unsuccessful')
 
           return reject(
             new Error(`authentication failed: ${queryParams.get('error')}`)
           )
-        } else {
-          const { body, statusCode } = await getAccessToken({
-            redirectUri: SPOTIFY_APP_REDIRECT_URI,
-            clientId,
-            code: queryParams.get('code'),
-            codeVerifier
-          })
-
-          if (statusCode !== 200) {
-            res.writeHead(500)
-            res.end('authentication unsuccessful')
-
-            return reject(
-              new Error('authentication failed: invalid status code received whilst requesting access token')
-            )
-          }
-
-          res.writeHead(200)
-          res.end('authentication successful, you can now close this page')
-
-          return resolve({
-            accessToken: body.access_token,
-            refreshToken: body.refresh_token,
-            expiresAt: new Date(new Date().getTime() + (1000 * body.expires_in))
-          })
         }
+
+        const { body, statusCode } = await getAccessToken({
+          redirectUri: SPOTIFY_APP_REDIRECT_URI,
+          clientId,
+          code: queryParams.get('code'),
+          codeVerifier
+        })
+
+        if (statusCode !== 200) {
+          res.writeHead(500)
+          res.end('authentication unsuccessful')
+
+          return reject(
+            new Error('authentication failed: invalid status code received whilst requesting access token')
+          )
+        }
+
+        res.writeHead(200)
+        res.end('authentication successful, you can now close this page')
+
+        return resolve({
+          accessToken: body.access_token,
+          refreshToken: body.refresh_token,
+          expiresAt: new Date(new Date().getTime() + (1000 * body.expires_in))
+        })
       })
 
       debugAuth('starting HTTP authentication handler')
