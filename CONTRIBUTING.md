@@ -16,7 +16,7 @@ Please report issues via the issue tracker on [GitHub](https://github.com/playli
   npm run fmt
   ```
 
-- **Add tests where appropriate** - [Jest](https://jestjs.io/)
+- **Add tests where appropriate** - [Vitest](https://vitest.dev/)
 
 - **Document any change in behaviour** - Make sure the README and any other relevant documentation are kept up-to-date.
 
