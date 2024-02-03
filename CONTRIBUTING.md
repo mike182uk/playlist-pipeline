@@ -17,6 +17,9 @@ Please report issues via the issue tracker on [GitHub](https://github.com/playli
   ```
 
 - **Add tests where appropriate** - [Vitest](https://vitest.dev/)
+  ```sh
+  npm test
+  ```
 
 - **Document any change in behaviour** - Make sure the README and any other relevant documentation are kept up-to-date.
 
@@ -25,11 +28,3 @@ Please report issues via the issue tracker on [GitHub](https://github.com/playli
 - **One pull request per feature**
 
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please squash them before submitting.
-
-## Running Tests
-
-You can run all the tests in the project using:
-
-```bash
-npm test
-```
