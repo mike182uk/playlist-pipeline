@@ -1,17 +1,9 @@
-import Joi from "joi"
+import Joi, { ObjectSchema } from "joi"
+import { Task, TaskConfig } from "../task"
 
-/**
- * Build config validation schema from the provided tasks
- *
- * @param {object[]} tasks
- *
- * @returns {Joi.ObjectSchema<any>}
- */
-export function buildSchema(tasks) {
+export function buildSchema(tasks: Task<TaskConfig, any>[]): ObjectSchema {
   const tasksSchema = tasks.reduce(
     (schema, task) => {
-      if (task.getConfigSchema === undefined) return schema
-
       return schema.when(".type", {
         is: task.id,
         then: Joi.object({

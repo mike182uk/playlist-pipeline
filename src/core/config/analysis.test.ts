@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { SORT_ASCENDING } from "../task/sortTracks.js"
+import { SORT_ASCENDING } from "../task/SortTracksTask"
 import { usesAlbumField, usesGenreField } from "./analysis.js"
 
 describe("usesAlbumField", () => {

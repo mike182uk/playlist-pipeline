@@ -1,19 +1,24 @@
 import { writeFile } from "node:fs/promises"
 import Joi from "joi"
-import { describe, expect, test, vi } from "vitest"
-import { findErrorByContextLabel } from "../test/validationUtils.js"
-import { FORMAT_JSON, execute, getConfigSchema, id } from "./exportTracks.js"
+import { Mock, describe, expect, test, vi } from "vitest"
+
+import { createTrack } from "../test/fixtures"
+import { findErrorByContextLabel } from "../test/validation"
+
+import ExportTracksTask, { FORMAT_JSON } from "./ExportTracksTask"
+
+const task = new ExportTracksTask()
 
 vi.mock("node:fs/promises", () => ({
   writeFile: vi.fn(),
 }))
 
 test("has correct id", () => {
-  expect(id).toBe("tracks.export")
+  expect(task.id).toBe("tracks.export")
 })
 
 describe("getConfigSchema", () => {
-  const schema = Joi.object(getConfigSchema())
+  const schema = Joi.object(task.getConfigSchema())
 
   test(".tracks is required in the config schema", () => {
     const result = schema.validate({}, { abortEarly: false })
@@ -22,8 +27,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "tracks")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.required")
+    expect(err && err.type).toEqual("any.required")
   })
 
   test(".tracks must be a string in the config schema", () => {
@@ -38,8 +42,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "tracks")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("string.base")
+    expect(err && err.type).toEqual("string.base")
   })
 
   test(".format is required in the config schema", () => {
@@ -54,8 +57,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "format")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.required")
+    expect(err && err.type).toEqual("any.required")
   })
 
   test(".format is a valid string in the config schema", () => {
@@ -71,9 +73,8 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "format")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.only")
-    expect(err.context.valids).toEqual([FORMAT_JSON])
+    expect(err && err.type).toEqual("any.only")
+    expect(err && err.context && err.context.valids).toEqual([FORMAT_JSON])
   })
 
   test(".fields is required in the config schema", () => {
@@ -89,8 +90,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "fields")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.required")
+    expect(err && err.type).toEqual("any.required")
   })
 
   test(".fields contains a valid string in the config schema", () => {
@@ -107,9 +107,8 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "fields[0]")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.only")
-    expect(err.context.valids).toEqual([
+    expect(err && err.type).toEqual("any.only")
+    expect(err && err.context && err.context.valids).toEqual([
       "id",
       "name",
       "trackNumber",
@@ -143,8 +142,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "filename")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.required")
+    expect(err && err.type).toEqual("any.required")
   })
 
   test(".filename must be a string in the config schema", () => {
@@ -162,28 +160,27 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "filename")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("string.base")
+    expect(err && err.type).toEqual("string.base")
   })
 })
 
 describe("execute", () => {
   test("exports tracks to file", async () => {
-    const trackCollectionName = "foo"
-    const tracks = [
-      { id: "foo", artist: "artist 1", name: "artist 1 album 1 track 1" },
-      { id: "bar", artist: "artist 1", name: "artist 1 album 1 track 2" },
-    ]
     const trackCollections = {
-      [trackCollectionName]: tracks,
+      foo: [
+        createTrack({
+          id: "foo",
+          artist: "artist 1",
+          name: "artist 1 album 1 track 1",
+        }),
+        createTrack({
+          id: "bar",
+          artist: "artist 1",
+          name: "artist 1 album 1 track 2",
+        }),
+      ],
     }
     const filename = "foo"
-    const config = {
-      tracks: trackCollectionName,
-      format: FORMAT_JSON,
-      fields: ["artist", "name"],
-      filename,
-    }
     const expectedFilename = `${filename}.json`
     const expectedFileContents = `[
   {
@@ -196,7 +193,15 @@ describe("execute", () => {
   }
 ]`
 
-    await execute({ config, trackCollections })
+    await task.execute({
+      config: {
+        tracks: "foo",
+        format: FORMAT_JSON,
+        fields: ["artist", "name"],
+        filename,
+      },
+      trackCollections,
+    })
 
     expect(writeFile).toHaveBeenCalledTimes(1)
     expect(writeFile).toHaveBeenLastCalledWith(
@@ -209,9 +214,12 @@ describe("execute", () => {
     const trackCollectionName = "foo"
 
     await expect(
-      execute({
+      task.execute({
         config: {
           tracks: trackCollectionName,
+          format: FORMAT_JSON,
+          fields: ["artist", "name"],
+          filename: "bar",
         },
         trackCollections: {},
       })
@@ -221,11 +229,10 @@ describe("execute", () => {
   test("throws an error if an error occurred whilst exporting to file", async () => {
     const trackCollectionName = "foo"
     const err = new Error("foo bar baz")
-
-    writeFile.mockRejectedValue(err)
+    ;(writeFile as Mock).mockRejectedValue(err)
 
     await expect(
-      execute({
+      task.execute({
         config: {
           tracks: trackCollectionName,
           format: FORMAT_JSON,

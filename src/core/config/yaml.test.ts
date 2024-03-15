@@ -1,5 +1,6 @@
 import tempWrite from "temp-write"
 import { describe, expect, test } from "vitest"
+
 import { loadYAMLConfig } from "./yaml.js"
 
 describe("loadYAMLConfig", () => {

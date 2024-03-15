@@ -4,9 +4,9 @@
   "description": "A CLI for programmatically organising, pruning & grooming your Spotify playlists",
   "type": "module",
   "scripts": {
-    "fmt": "npx @biomejs/biome format --write .",
-    "lint": "npx @biomejs/biome lint .",
-    "test": "npx vitest ./lib --run --coverage --reporter=verbose"
+    "fmt": "npx @biomejs/biome format --write ./src",
+    "lint": "npx @biomejs/biome lint ./src",
+    "test": "npx vitest ./src --run --coverage --reporter=verbose"
   },
   "bin": "./index.js",
   "engines": {
@@ -47,6 +47,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@faker-js/faker": "8.4.1",
+    "@types/lodash-es": "4.17.12",
     "@vitest/coverage-v8": "1.2.2",
     "jest-when": "3.6.0",
     "temp-write": "5.0.0",

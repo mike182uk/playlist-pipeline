@@ -1,14 +1,7 @@
 import { readFile } from "node:fs/promises"
 import yaml from "js-yaml"
 
-/**
- * Load YAML config from the provided path
- *
- * @param {string} path
- *
- * @returns {Promise<object>}
- */
-export async function loadYAMLConfig(path) {
+export async function loadYAMLConfig(path): Promise<Record<string, unknown>> {
   try {
     const yamlData = await readFile(path)
     const config = await yaml.load(yamlData)

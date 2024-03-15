@@ -1,14 +1,19 @@
 import Joi from "joi"
 import { describe, expect, test } from "vitest"
-import { findErrorByContextLabel } from "../test/validationUtils.js"
-import { execute, getConfigSchema, id } from "./mergeTracks.js"
+
+import { createTrack } from "../test/fixtures"
+import { findErrorByContextLabel } from "../test/validation"
+
+import MergeTracksTask from "./MergeTracksTask"
+
+const task = new MergeTracksTask()
 
 test("has correct id", () => {
-  expect(id).toBe("tracks.merge")
+  expect(task.id).toBe("tracks.merge")
 })
 
 describe("getConfigSchema", () => {
-  const schema = Joi.object(getConfigSchema())
+  const schema = Joi.object(task.getConfigSchema())
 
   test(".tracks is required in the config schema", () => {
     const result = schema.validate({}, { abortEarly: false })
@@ -17,8 +22,7 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "tracks")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("any.required")
+    expect(err && err.type).toEqual("any.required")
   })
 
   test(".tracks must be an array of strings in the config schema", () => {
@@ -33,31 +37,35 @@ describe("getConfigSchema", () => {
 
     const err = findErrorByContextLabel(result.error, "tracks[1]")
 
-    expect(err).toBeDefined()
-    expect(err.type).toEqual("string.base")
+    expect(err && err.type).toEqual("string.base")
   })
 })
 
 describe("execute", () => {
-  test("returns an array containing tracks from all of the provided track sources", async () => {
-    const trackCollection1Name = "foo"
-    const trackCollection2Name = "bar"
+  test("returns a merged track collection from the provided track sources", async () => {
+    const trackCollections = {
+      foo: [
+        createTrack({ name: "foo track 1" }),
+        createTrack({ name: "foo track 2" }),
+      ],
+      bar: [
+        createTrack({ name: "bar track 1" }),
+        createTrack({ name: "bar track 2" }),
+      ],
+    }
 
-    const mergedTracks = await execute({
+    const mergedTracks = await task.execute({
       config: {
-        tracks: [trackCollection1Name, trackCollection2Name],
+        tracks: Object.keys(trackCollections),
       },
-      trackCollections: {
-        [trackCollection1Name]: [{ name: "foo" }, { name: "bar" }],
-        [trackCollection2Name]: [{ name: "baz" }, { name: "qux" }],
-      },
+      trackCollections,
     })
 
-    expect(mergedTracks).toEqual([
-      { name: "foo" },
-      { name: "bar" },
-      { name: "baz" },
-      { name: "qux" },
+    expect(mergedTracks.map((track) => track.name)).toEqual([
+      trackCollections.foo[0].name,
+      trackCollections.foo[1].name,
+      trackCollections.bar[0].name,
+      trackCollections.bar[1].name,
     ])
   })
 
@@ -65,7 +73,7 @@ describe("execute", () => {
     const trackCollectionName = "foo"
 
     await expect(
-      execute({
+      task.execute({
         config: {
           tracks: [trackCollectionName],
         },
