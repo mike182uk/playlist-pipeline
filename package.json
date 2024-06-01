@@ -50,6 +50,6 @@
     "@vitest/coverage-v8": "1.2.2",
     "jest-when": "3.6.0",
     "temp-write": "5.0.0",
-    "vitest": "1.5.3"
+    "vitest": "1.6.0"
   }
 }
